@@ -31,6 +31,8 @@ A coleta é script e roda sem agente. O julgamento é do agente, que lê a descr
 | Onboarding | Entrevistar a pessoa e gravar perfil e busca | `skills/` |
 | Triagem | Dar estrelas, motivo e alertas a cada vaga nova | `skills/` |
 | Agendamento | Registrar e remover a tarefa no agendador do sistema | `src/schedule.mjs` |
+| Currículo por vaga | Montar o currículo ajustado a uma vaga a partir do perfil | `skills/` |
+| Munição de entrevista | Montar a página única de preparo para uma entrevista | `skills/` |
 | Guarda de privacidade | Barrar dado pessoal antes do commit | `scripts/` |
 
 ## 3. Persistência
@@ -44,6 +46,8 @@ Tudo em `~/.radar-de-vagas/`, fora do repositório clonado.
 | `regua.md` | Pontos de atenção aprendidos com os descartes | Triagem |
 | `estado.json` | Vagas, triagem de cada uma e marcações da pessoa | Coleta, triagem, página |
 | `empresas.json` | Empresas acompanhadas nas fontes por empresa | Pessoa, onboarding |
+| `curriculos/` | Um currículo por vaga, em HTML pronto para salvar como PDF pelo navegador | Currículo por vaga |
+| `entrevistas/` | Uma página de munição por entrevista | Munição de entrevista |
 
 ## 4. Integrações externas
 
@@ -55,11 +59,11 @@ Teste de 2026-10-01, sem login. Mediu se o endereço responde, não a qualidade 
 | LinkedIn | por termo | aberto, pode ser bloqueado | F1 |
 | Greenhouse, Lever, Ashby | por empresa | dados abertos | F1 |
 | InHire | por empresa | dados abertos | F1 |
-| SmartRecruiters, Workable, Teamtailor | por empresa | dados abertos | F6 |
-| trampos.co | por termo | dados abertos | F6 |
-| Remotive, RemoteOK, Himalayas, We Work Remotely | por termo, vagas remotas | dados abertos | F6 |
-| Vagas.com, InfoJobs, Catho, Programathor, Remotar | por termo | página abre, falta confirmar a leitura | F6 |
-| Sólides, Workday, Recruitee | por empresa | não confirmado | F6 |
+| SmartRecruiters, Workable, Teamtailor | por empresa | dados abertos | F7 |
+| trampos.co | por termo | dados abertos | F7 |
+| Remotive, RemoteOK, Himalayas, We Work Remotely | por termo, vagas remotas | dados abertos | F7 |
+| Vagas.com, InfoJobs, Catho, Programathor, Remotar | por termo | página abre, falta confirmar a leitura | F7 |
+| Sólides, Workday, Recruitee | por empresa | não confirmado | F7 |
 | Indeed, Glassdoor, Jooble | por termo | bloqueado | fora |
 
 Nenhuma fonte usa login nem credencial da pessoa.
@@ -75,7 +79,7 @@ radar-de-vagas/
 │   ├── server.mjs
 │   └── schedule.mjs
 ├── web/             # página do radar
-├── skills/          # onboarding, triagem, agendamento
+├── skills/          # onboarding, triagem, agendamento, currículo, entrevista
 ├── examples/        # perfil e busca fictícios
 ├── scripts/         # guarda de privacidade
 └── test/

@@ -7,3 +7,4 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 ### Adicionado
 
 - **Documentação inicial.** Plano do produto, arquitetura planejada, roadmap com as fases F0 a F7 e as tarefas da F1. Nenhum código de produto.
+- **Plano aprovado.** Fases F0 a F8, com a F5 dedicada a acompanhamento das candidaturas, currículo por vaga e munição de entrevista. Decisões registradas no `ROADMAP.md`.

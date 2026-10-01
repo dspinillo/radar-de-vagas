@@ -17,6 +17,10 @@
 - **Vaga fresca converte mais.** Ordenar por data de publicação e mostrar a idade da vaga.
 - **Olhar a pergunta de pretensão salarial antes de investir tempo.** Faixa incompatível só aparece no formulário.
 
+## Referências estudadas
+
+- **Moonlighter (AGPL-3.0).** Projeto parecido, em Python, que varre páginas de vagas por empresa, pontua contra o perfil e monta uma folha de respostas. Ele preenchia formulários no navegador e abandonou isso: dependia de marcação de formulário, captcha e regras de plataforma fora do controle dele. Lição para a F7: a folha de respostas vem antes do preenchimento, e o preenchimento só entra se sobreviver a esses três problemas. Licença AGPL: estudar as ideias, não copiar código.
+
 ## Ambiente / ferramentas
 
 - **LinkedIn sem login.** Responde, mas limita por volume: manter cerca de um segundo entre chamadas.

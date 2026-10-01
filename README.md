@@ -21,6 +21,7 @@ O que ele **não** é: não se candidata por você, não esconde vaga por conta 
 3. A coleta roda quando você pedir ou no horário que você agendar (por exemplo, a cada seis horas).
 4. A página do radar abre no navegador com as vagas novas, as estrelas e os alertas.
 5. Você marca **inscrevi** ou **descartar**, com o motivo. O radar aprende.
+6. Para a vaga que vale a pena, o agente monta o currículo ajustado a ela. Quando aparecer entrevista, monta uma página única de preparo. Os dois usam só o que está no seu perfil.
 
 Sem agente instalado, a coleta e a página funcionam só com Node. Você vê as vagas, mas sem estrelas nem alertas.
 

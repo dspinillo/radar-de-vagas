@@ -23,6 +23,12 @@
 | Marcação | Decisão da pessoa sobre uma vaga: inscrevi ou descartar | `status` |
 | Motivo do descarte | O que a pessoa escreveu ao descartar | `cutReason` |
 | Radar | A página local com a tabela de vagas | `web/` |
+| Acompanhamento | A parte do radar com as vagas em que a pessoa se inscreveu e o andamento de cada processo | `tracking` |
+| Próximo passo | O que a pessoa precisa fazer numa candidatura | `next` |
+| Entrega | Um resultado concreto do histórico da pessoa, com contexto e número quando houver. É a matéria-prima do currículo e da munição | `perfil.md` |
+| Currículo base | O currículo que a pessoa trouxe no onboarding | `perfil.md` |
+| Currículo por vaga | Versão do currículo base ajustada a uma vaga, só com entregas do perfil | `curriculos/` |
+| Munição de entrevista | Página única de preparo para uma entrevista específica | `entrevistas/` |
 
 ## Não confundir
 
@@ -34,3 +40,4 @@
 
 - "Filtro" para o que a régua faz. A régua alerta, não filtra.
 - "Candidatura automática". O radar não envia nada.
+- "Gerar currículo". O currículo por vaga é montado a partir do perfil, não gerado do nada.

@@ -13,6 +13,7 @@ Um radar pessoal de vagas que roda na máquina de quem procura emprego. Um agent
 3. **Descarte vira alerta, não corte.** O motivo de um descarte vira ponto de atenção nas vagas futuras. A decisão continua sendo da pessoa.
 4. **Ler a vaga inteira.** O julgamento nunca é feito sobre descrição truncada. Requisito de idioma e de tecnologia costuma estar no fim do anúncio.
 5. **A última ação é sempre humana.** No preenchimento assistido, o agente para antes do enviar.
+6. **Só o que é verdade.** Currículo por vaga e munição de entrevista usam apenas o que está no perfil. O agente escolhe, ordena e reescreve; não inventa experiência, número nem tecnologia. Lacuna é apresentada como lacuna.
 
 ## 3. Usuário-alvo
 
@@ -33,13 +34,17 @@ Nada ainda.
 | Área | Funcionalidade | Fase |
 |---|---|---|
 | Onboarding | Entrevista: LinkedIn, currículo, casos e entregas, localidade, modelo (remoto, híbrido, presencial), idiomas, faixa salarial por regime (CLT e PJ) | F2 |
+| Onboarding | Perguntas com risco explicado: ligar o LinkedIn (pode ser bloqueado) e teto de vagas julgadas por rodada (consumo da assinatura) | F2 |
 | Onboarding | Revisão do currículo e do LinkedIn, com pontos fortes e ajustes | F2 |
-| Coleta | Varredura por termo e por empresa em várias fontes, com deduplicação | F1, F6 |
+| Coleta | Varredura por termo e por empresa em várias fontes, com deduplicação | F1, F7 |
 | Triagem | Estrelas de 1 a 5, motivo e alertas por vaga | F2 |
 | Radar | Página local em tabela, com inscrevi e descartar com motivo | F1 |
 | Memória | Motivos de descarte viram pontos de atenção nas próximas vagas | F3 |
 | Agendamento | Rodar em intervalo definido pela pessoa, em Mac e Windows, ou só manualmente | F4 |
-| Candidatura | Preenchimento assistido do formulário, parando antes do enviar | F7 |
+| Acompanhamento | Depois do inscrevi: status do processo, próximo passo e observações por candidatura | F5 |
+| Currículo por vaga | Versão do currículo ajustada à vaga, montada a partir das entregas do perfil, com o que mudou em relação ao currículo base | F5 |
+| Munição de entrevista | Página única por entrevista: por que você encaixa, casos que respondem a cada requisito, lacunas e como tratá-las, perguntas a fazer e faixa salarial | F5 |
+| Candidatura | Folha de respostas do formulário; preenchimento assistido, parando antes do enviar | F8 |
 
 ### 5.3 Fora de escopo (não-objetivos)
 
@@ -61,5 +66,6 @@ Nada ainda.
 | Fonte muda ou bloqueia o acesso sem aviso | Uma fonte por arquivo, falha isolada e visível na página. LinkedIn opcional. |
 | Dado pessoal acaba no repositório | Dados fora da pasta clonada, exemplos fictícios e checagem automática antes de cada commit. |
 | Triagem agendada consome a assinatura da pessoa | Coleta sem agente, teto de vagas julgadas por rodada. |
-| Ninguém testa no Windows | Teste em Windows é critério da F4 e da F5. |
+| Ninguém testa no Windows | Teste em Windows é critério da F4 e da F6. |
+| Currículo ou munição com informação inventada | Os dois documentos só usam o perfil; cada afirmação aponta a entrega de origem, e a pessoa revisa antes de usar. |
 | Código de terceiros com licença incompatível | Projetos AGPL servem só para estudo de ideias. |
