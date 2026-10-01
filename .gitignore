@@ -1,0 +1,18 @@
+# Dados de quem usa nunca entram no repositório.
+# Eles vivem em ~/.radar-de-vagas/, mas estas regras cobrem o descuido.
+.radar-de-vagas/
+perfil.md
+busca.json
+regua.md
+estado.json
+empresas.json
+*.pdf
+*.docx
+raw.json
+
+.env
+.env.*
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
