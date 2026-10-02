@@ -1,8 +1,13 @@
-// Registro explícito das fontes do radar. Por ora não há fonte real: as
-// fontes entram aqui uma a uma nas tarefas seguintes (T1.2 em diante).
 import { SOURCE_NAME_PATTERN } from '../job.mjs';
 
-export const sources = [];
+import { gupy } from './gupy.mjs';
+import { linkedin } from './linkedin.mjs';
+import { greenhouse } from './greenhouse.mjs';
+import { lever } from './lever.mjs';
+import { ashby } from './ashby.mjs';
+import { inhire } from './inhire.mjs';
+
+export const sources = [gupy, linkedin, greenhouse, lever, ashby, inhire];
 
 /**
  * Valida o contrato de uma fonte. Devolve a lista de problemas em português;

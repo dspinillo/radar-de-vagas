@@ -1,0 +1,8 @@
+{
+  "greenhouse": {"jobs":[{"id":"gh-101","title":"Analista de planejamento","company_name":"Aurora Fictícia","absolute_url":"https://aurora.example/vagas/gh-101","content":"&lt;p&gt;Planejar o futuro.&lt;/p&gt;&lt;p&gt;Requisito final: idioma inventado.&lt;/p&gt;","location":{"name":"Cidade Imaginária"}}],"meta":{"total":1}},
+  "lever": [{"id":"lv-101","text":"Analista de planejamento","hostedUrl":"https://nebulosa.example/vagas/lv-101","applyUrl":"https://nebulosa.example/candidatura/lv-101","descriptionPlain":"Planejar a<b and c > d.","lists":[{"text":"Requisitos","content":"<li>Idioma inventado.</li>"}],"additionalPlain":"Última condição: disponibilidade fictícia.","salaryDescriptionPlain":"Faixa fictícia: 10 moedas.","categories":{"location":"Cidade Imaginária","commitment":"Efetivo"},"workplaceType":"remote"}],
+  "ashby": {"jobs":[{"id":"as-101","title":"Analista de planejamento","jobUrl":"https://orbita.example/vagas/as-101","descriptionPlain":"Planejar a<b and c > d.\nRequisito final: idioma inventado.","isListed":true,"isRemote":true,"publishedAt":"2026-01-02T12:00:00Z"}]},
+  "inhire": {"tenantName":"Constelação Fictícia","jobsPage":[{"jobId":"ih-101","displayName":"Analista de planejamento"}]},
+  "inhireDetail": {"jobId":"ih-101","displayName":"Analista de planejamento","tenantName":"Constelação Fictícia","description":"<p>Planejar o futuro.</p><p>Requisito final: idioma inventado.</p>","contractType":["Efetivo"],"workplaceType":"Remote"},
+  "gupy": {"data":[{"id":"gp-101","name":"Analista de planejamento","careerPageName":"Galáxia Fictícia","jobUrl":"https://galaxia.example/vagas/gp-101","description":"Resumo que não pode ser salvo."}],"pagination":{"total":1,"limit":100,"offset":0}}
+}

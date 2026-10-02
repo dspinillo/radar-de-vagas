@@ -4,7 +4,7 @@
 >
 > **Tipo:** misto (plugin de agente, scripts e página local) · **Nível:** N3 · **Stack:** Node 20+ sem dependências · **Licença:** MIT
 
-**Estado: em planejamento.** Ainda não há código para rodar. O que existe hoje é o plano, descrito em `PRD.md`, `ARCHITECTURE.md` e `ROADMAP.md`.
+**Estado: F1, coleta e radar local disponíveis.** Entrevista, estrelas, memória e acompanhamento ainda são planos, descritos em `PRD.md`, `ARCHITECTURE.md` e `ROADMAP.md`.
 
 ## Visão
 
@@ -44,7 +44,93 @@ radar-de-vagas/
 
 ## Como rodar
 
-Ainda não há o que rodar. As instruções de instalação para Mac e Windows entram na tarefa T1.8 (ver `ROADMAP.md`).
+Pré-requisitos: **Node.js 20 ou superior**, com npm, e Git instalados. Não há dependências para instalar. Use o Terminal no Mac ou o PowerShell no Windows.
+
+### Instalar e preparar a busca
+
+Nos dois sistemas, confira a versão do Node, clone e entre na pasta:
+
+```sh
+node --version
+git clone https://github.com/dspinillo/radar-de-vagas.git
+cd radar-de-vagas
+node --input-type=module -e "import { initializeDataDir } from './src/data-dir.mjs'; await initializeDataDir();"
+```
+
+A última linha cria `busca.json` com exemplos fictícios. Abra o arquivo para editar:
+
+Mac:
+
+```sh
+nano "${RADAR_DATA_DIR:-$HOME/.radar-de-vagas}/busca.json"
+```
+
+No nano, salve com Ctrl+O, Enter e saia com Ctrl+X.
+
+Windows (PowerShell):
+
+```powershell
+$dataDir = if ($env:RADAR_DATA_DIR) { $env:RADAR_DATA_DIR } else { Join-Path $HOME '.radar-de-vagas' }
+notepad (Join-Path $dataDir 'busca.json')
+```
+
+Substitua `termos` pelo que procura. Ajuste `localidade`, `modelo` (`remoto`, `híbrido` ou `presencial`) e `idadeMaximaDias`; `null` deixa a preferência em aberto. Em `empresas`, troque os identificadores fictícios pelos identificadores das páginas de carreiras de cada fonte, ou use `[]` para não consultar aquele portal. Remova o campo `aviso` quando terminar. Salve como JSON, mantendo aspas duplas e sem vírgula após o último item.
+
+Os campos opcionais `detalhesNovosPorFonte` (padrão **150**) e
+`prazoFonteSegundos` (padrão **600**, dez minutos) aceitam inteiros positivos e
+valem para cada fonte em cada rodada. O primeiro limita candidatos novos, somando
+termos e empresas; o segundo limita a execução inteira da fonte. Exemplo:
+
+```json
+"detalhesNovosPorFonte": 150,
+"prazoFonteSegundos": 600
+```
+
+A idade é aplicada na listagem antes dos detalhes; publicação desconhecida nunca
+exclui a vaga. Não há corte local por título ou modelo. Até quatro detalhes são
+processados em paralelo por fonte, mantendo o LinkedIn em série. Um aviso informa
+quantas vagas ficaram para a próxima rodada por causa do teto; elas continuam
+pendentes e serão tentadas nas próximas coletas. Um prazo excedido registra erro
+e permite seguir para a próxima fonte.
+
+LinkedIn vem desligado. Para ligar, mude `fontes.linkedin` para `true`. É raspagem de páginas públicas, sem login: pode sofrer bloqueios e mudanças no portal. O coletor espera entre chamadas e interrompe a fonte se encontrar uma barreira de acesso. Para desligar, volte para `false`.
+
+### Primeira coleta e página
+
+Depois de salvar a busca, rode nos dois sistemas:
+
+```sh
+npm run collect
+npm run open
+```
+
+São equivalentes a `node bin/radar.mjs collect` e `node bin/radar.mjs open`. A coleta mostra início, páginas, detalhes N de M, conclusão, contagens e avisos por fonte; avisos precisam ser conferidos mesmo se o comando terminar normalmente. O estado é salvo ao concluir cada fonte. **Ctrl+C** durante a coleta preserva as fontes concluídas e aguarda a limpeza de trava e temporários. Vagas reencontradas atualizam a última observação sem buscar detalhes novamente. `open` imprime o endereço local e abre o navegador padrão. Deixe o terminal aberto enquanto usa a página; **Ctrl+C** encerra o servidor. Se o navegador não abrir, copie o endereço impresso.
+
+Na tabela, **inscrevi** registra que você já enviou a candidatura. **Descartar** pede um motivo e salva a decisão. As marcações sobrevivem a fechar a página, reabrir e coletar novamente. O radar não envia candidaturas. Após outra coleta, use **Atualizar vagas** na página.
+
+### Dados e testes
+
+`busca.json` e `estado.json` ficam em `.radar-de-vagas` na pasta pessoal, fora do clone. A variável opcional `RADAR_DATA_DIR` escolhe outra pasta absoluta, também fora do repositório. Para testar sem usar seus dados, antes dos comandos acima:
+
+Mac:
+
+```sh
+export RADAR_DATA_DIR="$(mktemp -d)"
+```
+
+Windows (PowerShell):
+
+```powershell
+$env:RADAR_DATA_DIR = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid().ToString())
+```
+
+Dentro da pasta clonada, rode os testes sem rede:
+
+```sh
+node --test
+```
+
+Validação: passo a passo do Mac conferido em cópia limpa com pasta de dados temporária. **Windows ainda não validado em máquina real.**
 
 ## Privacidade
 

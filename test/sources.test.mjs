@@ -13,9 +13,10 @@ function fonteValida(extra = {}) {
   };
 }
 
-test('sources é uma lista (vazia por enquanto, nenhuma fonte real nesta fatia)', () => {
+test('sources registra as seis fontes válidas, sem nomes repetidos', () => {
   assert.ok(Array.isArray(sources));
-  assert.equal(sources.length, 0);
+  assert.deepEqual(sources.map(source => source.name), ['gupy', 'linkedin', 'greenhouse', 'lever', 'ashby', 'inhire']);
+  for (const source of sources) assert.deepEqual(validateSource(source), []);
 });
 
 test('validateSource aceita uma fonte válida do tipo company', () => {

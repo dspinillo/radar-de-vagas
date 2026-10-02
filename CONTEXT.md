@@ -20,7 +20,12 @@
 | Busca | O que a pessoa procura: termos, nível, local, modelo, idiomas, faixa | `busca.json` |
 | Régua | A lista de pontos de atenção | `regua.md` |
 | Estado | Vagas, triagens e marcações | `estado.json` |
+| Pasta de dados | Diretório externo ao repositório com os arquivos da pessoa; pode ser sobreposto nos testes | `dataDir`, `RADAR_DATA_DIR` |
+| Identidade alternativa | Identificador de outra fonte que aponta para a chave estável de uma vaga fundida | `aliases` |
+| Outros anúncios | Identidades e links observados na fusão de uma vaga, preservando o anúncio original | `seen.alsoAt` |
 | Marcação | Decisão da pessoa sobre uma vaga: inscrevi ou descartar | `status` |
+| Inscrevi | Marcação de que a pessoa enviou a candidatura | `status: "applied"` |
+| Descartar | Marcação acompanhada de motivo escrito pela pessoa | `status: "discarded"` |
 | Motivo do descarte | O que a pessoa escreveu ao descartar | `cutReason` |
 | Possível duplicata | Vagas de fontes diferentes com empresa e título parecidos. É só um aviso; fusão exige o mesmo link de inscrição | `dedupKey` |
 | Radar | A página local com a tabela de vagas | `web/` |

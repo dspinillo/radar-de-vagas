@@ -7,6 +7,8 @@
   },
   "license": "MIT",
   "scripts": {
+    "open": "node bin/radar.mjs open",
+    "collect": "node bin/radar.mjs collect",
     "test": "node --test",
     "check:privacy": "node scripts/check-privacy.mjs"
   }
