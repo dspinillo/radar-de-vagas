@@ -19,7 +19,7 @@
 | Perfil | Quem a pessoa é: casos, entregas, currículo | `perfil.md` |
 | Busca | O que a pessoa procura: termos, nível, local, modelo, idiomas, faixa | `busca.json` |
 | Régua | A lista de pontos de atenção | `regua.md` |
-| Estado | Vagas, triagens e marcações | `estado.json` |
+| Estado | Vagas, triagens, marcações e acompanhamento | `estado.json` |
 | Pasta de dados | Diretório externo ao repositório com os arquivos da pessoa; pode ser sobreposto nos testes | `dataDir`, `RADAR_DATA_DIR` |
 | Identidade alternativa | Identificador de outra fonte que aponta para a chave estável de uma vaga fundida | `aliases` |
 | Outros anúncios | Identidades e links observados na fusão de uma vaga, preservando o anúncio original | `seen.alsoAt` |
@@ -28,8 +28,13 @@
 | Descartar | Marcação acompanhada de motivo escrito pela pessoa | `status: "discarded"` |
 | Motivo do descarte | O que a pessoa escreveu ao descartar | `cutReason` |
 | Possível duplicata | Vagas de fontes diferentes com empresa e título parecidos. É só um aviso; fusão exige o mesmo link de inscrição | `dedupKey` |
-| Radar | A página local com a tabela de vagas | `web/` |
+| Radar | A página local com a tabela de vagas | `src/page/` |
 | Acompanhamento | A parte do radar com as vagas em que a pessoa se inscreveu e o andamento de cada processo | `tracking` |
+| Etapa | Fase atual de um processo seletivo | `tracking.stage` |
+| Notas | Histórico registrado no acompanhamento | `tracking.notes` |
+| Identificador | Chave estável exibida e copiável na linha da vaga | `id` |
+| Agenda | Coleta seguida de triagem no horário configurado | `schedule`, `scheduledRun` |
+| Trava da agenda | PID que impede rodadas agendadas simultâneas | `agendamento.lock` |
 | Próximo passo | O que a pessoa precisa fazer numa candidatura | `next` |
 | Entrega | Um resultado concreto do histórico da pessoa, com contexto e número quando houver. É a matéria-prima do currículo e da munição | `perfil.md` |
 | Currículo base | O currículo que a pessoa trouxe no onboarding | `perfil.md` |

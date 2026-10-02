@@ -4,7 +4,7 @@
 >
 > **Tipo:** misto (plugin de agente, scripts e página local) · **Nível:** N3 · **Stack:** Node 20+ sem dependências · **Licença:** MIT
 
-**Estado: F1, coleta e radar local disponíveis.** Entrevista, estrelas, memória e acompanhamento ainda são planos, descritos em `PRD.md`, `ARCHITECTURE.md` e `ROADMAP.md`.
+**Versão 0.1.0.** Coleta, radar local, cinco skills, triagem, acompanhamento e agendamento implementados. Validação nativa do agendamento em Mac e Windows permanece pendente.
 
 ## Visão
 
@@ -14,7 +14,7 @@ Ele começa com uma entrevista: quem você é, seus casos e entregas, seu currí
 
 O que ele **não** é: não se candidata por você, não esconde vaga por conta própria e não manda seus dados para lugar nenhum. Perfil, currículo e histórico ficam numa pasta da sua máquina, fora deste repositório.
 
-## Como vai funcionar
+## Como funciona
 
 1. Você clona o repositório e abre no Claude Code ou no Codex.
 2. O agente faz a entrevista e grava seu perfil em `~/.radar-de-vagas/`.
@@ -135,3 +135,83 @@ Validação: passo a passo do Mac conferido em cópia limpa com pasta de dados t
 ## Privacidade
 
 Este repositório não contém dado pessoal de ninguém e não pode conter. Os exemplos são fictícios. Antes de contribuir, leia a seção de privacidade em `CLAUDE.md`.
+
+## Skills no Claude Code e no Codex
+
+As skills de onboarding, triagem com memória, currículo por vaga, entrevista e
+acompanhamento estão em `skills/`. O julgamento do produto vive nesses arquivos.
+Os exemplos em `examples/perfil.md` e `examples/regua.md` são inteiramente fictícios.
+Os comandos das fases F2 a F5 precisam estar disponíveis na versão usada do clone.
+
+### Instalar como plugin do Claude Code
+
+Com Claude Code instalado e autenticado, execute na raiz deste clone:
+
+```sh
+claude plugin marketplace add ./
+claude plugin install radar-de-vagas@radar-de-vagas-local
+claude
+```
+
+Na sessão aberta, use `/radar-de-vagas:onboarding`. As demais skills têm o mesmo
+prefixo: `triagem`, `curriculo-por-vaga`, `entrevista` e `acompanhamento`.
+Continue trabalhando na raiz do clone para os comandos encontrarem `bin/radar.mjs`.
+O catálogo local em `.claude-plugin/marketplace.json` permite essa instalação.
+Veja a [documentação oficial de marketplaces do Claude Code](https://code.claude.com/docs/en/plugin-marketplaces).
+
+Para carregar diretamente os arquivos do clone durante uma sessão, também pode usar
+`claude --plugin-dir .` e os mesmos nomes de skills, conforme a
+[documentação oficial de plugins](https://code.claude.com/docs/en/plugins).
+**Instalação e uso no Windows não validados.**
+
+### Usar no Codex
+
+Abra este clone como projeto no Codex e peça: "Faça meu onboarding do Radar de Vagas
+seguindo skills/onboarding/SKILL.md". O `AGENTS.md` aponta para as mesmas cinco skills.
+Para as próximas tarefas, peça "Faça a triagem" ou "Monte o currículo para a vaga
+de ID informado", usando o ID real exibido pelo radar. Não precisa duplicar skills.
+Esse encaminhamento usa [instruções de projeto em AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md).
+**Uso e agendamento no Windows não validados.**
+
+### Fluxo de uso em cinco passos
+
+1. **Onboarding.** Responda uma pergunta por vez sobre repertório e preferências.
+   O agente grava perfil e busca fora do clone e revisa currículo e LinkedIn.
+   Você escolhe LinkedIn, teto de triagem, agente e agenda com os riscos explicados.
+2. **Coleta.** Rode `node bin/radar.mjs collect`. A coleta funciona sem agente.
+   Confira os avisos das fontes e substitua empresas fictícias antes de acompanhar empresas.
+3. **Triagem.** Peça a skill de triagem ao agente. Ela lê cada descrição inteira,
+   grava estrelas, motivo e alertas e atualiza a régua com os motivos dos descartes.
+   O teto padrão é 30 vagas por rodada; as demais ficam na fila, sem descarte automático.
+   Com `agente` configurado como `claude` ou `codex` em `busca.json`, também pode usar
+   `node bin/radar.mjs triage-run`. Sem esse campo, o comando só explica como ligar.
+4. **Página.** Rode `node bin/radar.mjs open` para comparar vagas no navegador.
+   Quem decide é você. Descartar exige seu motivo; a memória avisa em vagas parecidas.
+5. **Candidatura e entrevista.** Peça o currículo pelo ID, revise o HTML e salve como
+   PDF pelo navegador. Envie a candidatura por conta própria e marque **inscrevi** na página.
+   Conte novidades ao agente para atualizar etapa e próximo passo. Quando tiver entrevista,
+   informe o ID para registrar a conversa e receber a página única de preparo.
+   Currículo e munição usam somente fatos do perfil; lacunas viram perguntas.
+
+O onboarding pode ligar `node bin/radar.mjs schedule on --hours 6`, que agenda coleta
+seguida de `triage-run`. Para conferir, use `node bin/radar.mjs schedule status`;
+para voltar ao modo manual, `node bin/radar.mjs schedule off`.
+Máquina desligada não executa a agenda. O agente precisa estar instalado e autenticado;
+cada julgamento consome sua assinatura ou cota. **Agendamento no Windows não validado.**
+
+`node bin/radar.mjs paths` informa os caminhos de perfil, busca, régua, currículos e
+entrevistas. Esses documentos são escritos nesses caminhos, pois não há comandos de
+edição de documentos no contrato. O estado das vagas é acessado apenas pelos comandos;
+nenhuma skill edita `estado.json`. `track` atualiza acompanhamento, sem marcar inscrevi
+ou descartar, ações que continuam na página. Campos omitidos são preservados atomicamente;
+`--clear-next` limpa o próximo passo e `--clear-notes` limpa as notas. Não combine uma
+opção de limpeza com o texto do mesmo campo. Valores iniciados por `--` são aceitos
+como argumento literal ou com `=`, por exemplo `--reason="--home office"`.
+O ID permanece visível na linha da vaga, com botão **Copiar ID**, inclusive após inscrevi.
+
+Ao ligar a agenda, o radar valida Node e o agente configurado, guarda um PATH com
+as pastas dos executáveis e preserva `RADAR_DATA_DIR` quando definida. Uma rodada
+ainda ativa faz a próxima sair sem coletar nem triar, registrando o motivo no log.
+Travas de processos encerrados são recuperadas; uma trava sem PID válido só é
+recuperada após 30 segundos. `agendamento.log` é reduzido à parte final de cerca
+de 256 KiB quando ultrapassa 1 MiB, sem criar arquivos de rotação.

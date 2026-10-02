@@ -4,7 +4,13 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## [Não lançado]
 
+## [0.1.0] - 2026-10-02
+
 ### Adicionado
+
+- **Infraestrutura de código das F2 a F5.** Comandos `paths`, `pending`, `show`, `triage`, `discards`, `track` e `triage-run`; JSON nos comandos de leitura, descrições inteiras, aliases, setters por dono e erros de uso com saída 2. Busca aceita teto de triagem opcional (padrão 30) e agente opcional (`claude` ou `codex`). Nenhum julgamento foi movido das skills para código.
+- **Agendamento.** `schedule on/off/status`, launchd no Mac com `StartInterval` e `RunAtLoad`, schtasks no Windows com XML UTF-16 e `StartWhenAvailable`; coleta seguida de triagem e log dentro da pasta de dados. Geradores puros e processos injetáveis, sem instalar tarefa real nos testes. Validação nativa em Mac e Windows permanece pendente.
+- **Acompanhamento na tabela existente.** Ordenação por estrelas e data; edição de etapa, próximo passo e notas nas vagas com inscrevi. Rota `POST /api/jobs/:id/tracking` usa `setTracking` e as mesmas proteções de origem, Host e corpo da marcação. Testes de comandos, agendamento e rota usam apenas dados fictícios em pastas temporárias.
 
 - **T1.6 · Página e comando de abertura.** Radar local com tabela, inscrevi e descarte com motivo persistidos. `node bin/radar.mjs open` ou `npm run open` inicia o servidor, imprime o endereço e chama o navegador padrão no Mac, Windows e Linux, sem dependências. Ctrl+C encerra o servidor; comando sem argumento mostra ajuda em português. Despachante testado com abridor injetado, servidor real temporário e sinais de encerramento. Abridores de Windows e Linux verificados por injeção, sem validação em máquina real.
 - **T1.8 · Instalação e primeiro uso.** README com Node 20+, clone, preparação da busca, primeira coleta, LinkedIn opcional e risco de bloqueio, página, marcações, dados e testes. Passo a passo do Mac validado em cópia limpa e dados temporários; Windows pendente de validação em máquina real.
@@ -22,6 +28,10 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 - **Plano aprovado.** Fases F0 a F8, com a F5 dedicada a acompanhamento das candidaturas, currículo por vaga e munição de entrevista. Decisões registradas no `ROADMAP.md`.
 
 ### Corrigido
+
+- **Correções das F2 a F5.** `track` preserva campos omitidos sob trava e oferece `--clear-next` e `--clear-notes`; opções aceitam valores literais iniciados por `--`, separados ou com `=`. Skills de acompanhamento e entrevista atualizadas.
+- Instalação do marketplace usa `./`. Agenda valida caminhos absolutos dos executáveis antes de substituir a tarefa, guarda PATH e propaga `RADAR_DATA_DIR`. Log acima de 1 MiB retém cerca de 256 KiB no mesmo arquivo. Trava com PID impede sobreposição e recupera processos encerrados.
+- Identificador visível e botão de cópia em cada linha, inclusive após inscrevi. Regressões sem rede com dados fictícios em pastas temporárias e agendadores simulados.
 
 - **Correções finais da F1.** Idade aplicada na listagem pelo helper das seis fontes, preservando datas desconhecidas e sem corte local por título ou modelo. Até quatro detalhes simultâneos por fonte; LinkedIn permanece em série com intervalo. `detalhesNovosPorFonte` (150) limita candidatos novos tentados, com contagem dos adiados sem marcá-los como vistos. `prazoFonteSegundos` (600) limita a execução completa, inclusive de fontes injetadas que nunca resolvem; falha registrada não impede a fonte seguinte.
 - Progresso em português durante a coleta e estado salvo por fonte. Ctrl+C/SIGTERM cancela requisições e aguarda limpeza de escrita atômica, trava e temporários, preservando fontes concluídas.

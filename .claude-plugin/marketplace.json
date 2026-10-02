@@ -1,0 +1,11 @@
+{
+  "name": "radar-de-vagas-local",
+  "owner": { "name": "Radar de Vagas" },
+  "plugins": [
+    {
+      "name": "radar-de-vagas",
+      "source": "./",
+      "description": "Skills do Radar de Vagas para Claude Code."
+    }
+  ]
+}

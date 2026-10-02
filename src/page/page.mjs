@@ -36,16 +36,17 @@ async function refresh() {
 
 function report(error) { feedback.textContent = error.message; }
 
-async function mark(row, value) {
+async function mark(row, value, block = 'mark') {
   if (saving) return;
   saving = true;
   const label = row.querySelector('strong').textContent;
-  const controls = [...document.querySelectorAll('#jobs button, #jobs textarea, #status, #search, #refresh')];
+  const controls = [...document.querySelectorAll('#jobs button, #jobs textarea, #jobs input, #status, #search, #refresh')];
   controls.forEach(control => { control.disabled = true; });
-  feedback.textContent = 'Salvando sua decisão…';
+  const labelSaved = block === 'tracking' ? 'Acompanhamento salvo' : value === null ? 'Marcação desfeita' : 'Decisão salva';
+  feedback.textContent = 'Salvando…';
   let saved = false;
   try {
-    const response = await fetch(`/api/jobs/${encodeURIComponent(row.dataset.id)}/mark`, {
+    const response = await fetch(`/api/jobs/${encodeURIComponent(row.dataset.id)}/${block}`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(value),
     });
     const data = await response.json();
@@ -54,12 +55,12 @@ async function mark(row, value) {
     // Um GET iniciado antes do POST pode conter a marcação antiga.
     if (loading) await loading.catch(() => {});
     await refresh();
-    feedback.textContent = `${value === null ? 'Marcação desfeita' : 'Decisão salva'}: ${label}.`;
+    feedback.textContent = `${labelSaved}: ${label}.`;
     const focusTarget = select('#table-wrap').hidden ? select('#status') : select('#table-wrap');
     focusTarget.disabled = false;
     focusTarget.focus();
   } catch (error) {
-    if (saved) feedback.textContent = 'Decisão salva, mas a lista não foi atualizada. Clique em Atualizar vagas.';
+    if (saved) feedback.textContent = `${labelSaved}, mas a lista não foi atualizada. Clique em Atualizar vagas.`;
     else report(error);
   } finally {
     saving = false;
@@ -67,10 +68,17 @@ async function mark(row, value) {
   }
 }
 
-select('#jobs').addEventListener('click', event => {
+select('#jobs').addEventListener('click', async event => {
   const button = event.target.closest('button[data-action]');
   if (!button || saving) return;
   const row = button.closest('tr');
+  if (button.dataset.action === 'copy-id') {
+    try {
+      await navigator.clipboard.writeText(row.dataset.id);
+      feedback.textContent = `Identificador copiado: ${row.dataset.id}.`;
+    } catch { feedback.textContent = 'Não foi possível copiar. Selecione o identificador na linha e copie manualmente.'; }
+    return;
+  }
   const form = row.querySelector('form');
   if (button.dataset.action === 'apply') void mark(row, { status: 'applied', cutReason: null });
   if (button.dataset.action === 'undo') void mark(row, null);
@@ -80,6 +88,14 @@ select('#jobs').addEventListener('click', event => {
 
 select('#jobs').addEventListener('submit', event => {
   event.preventDefault();
+  if (event.target.hasAttribute('data-tracking')) {
+    const { stage, next, notes } = event.target.elements;
+    stage.setCustomValidity(stage.value.trim() ? '' : 'Informe a etapa.');
+    if (event.target.reportValidity()) void mark(event.target.closest('tr'), {
+      stage: stage.value.trim(), next: next.value.trim() || null, notes: notes.value,
+    }, 'tracking');
+    return;
+  }
   const field = event.target.elements.cutReason;
   field.setCustomValidity(field.value.trim() ? '' : 'Escreva o motivo para descartar.');
   if (event.target.reportValidity()) void mark(event.target.closest('tr'), { status: 'discarded', cutReason: field.value.trim() });

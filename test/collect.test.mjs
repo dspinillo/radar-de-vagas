@@ -247,7 +247,7 @@ test('CLI real sem fontes ativas sai com um; ajuda e comando inválido não cole
   const cliOptions = { collect: async () => assert.fail('Coleta indevida.'), stdout: () => {}, stderr: () => {} };
   assert.equal(await main(['--help'], cliOptions), 0);
   assert.equal(await main([], cliOptions), 0);
-  for (const args of [['desconhecido'], ['collect', 'extra']]) assert.equal(await main(args, cliOptions), 1);
+  for (const args of [['desconhecido'], ['collect', 'extra']]) assert.equal(await main(args, cliOptions), 2);
 });
 
 test('CLI comunica falha fatal de busca sem alterar arquivo nem consultar fontes', async t => {

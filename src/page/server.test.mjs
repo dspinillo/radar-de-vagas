@@ -254,3 +254,73 @@ test('porta ocupada cai para outra porta e close pode ser repetido', async t => 
 test('porta inválida é rejeitada antes de iniciar', async () => {
   for (const port of [-1, 65536, 1.5, '4317']) await assert.rejects(startServer({ port }), /porta/);
 });
+
+test('tracking grava via alias, persiste ao reabrir e preserva os outros blocos', async t => {
+  const { options, server, open } = await setup(t, [job({ applyUrl: 'https://aurora.example/inscricao' })]);
+  await setMark(id, applied, options);
+  await setTriage(id, { fit: 5, reason: 'Motivo fictício.', alerts: ['Idioma.'] }, options);
+  await addJobs([job({ source: 'lever', sourceId: 'alias', applyUrl: 'https://aurora.example/inscricao' })], options);
+  const before = (await loadState(options)).jobs[id];
+  const tracking = { stage: 'Entrevista', next: 'Preparar casos.', notes: '<script>fictício</script>' };
+  const response = await fetch(`${server.url}/api/jobs/${encodeURIComponent('lever:alias')}/tracking`, {
+    method: 'POST', headers: { Origin: server.url, 'Content-Type': 'application/json' }, body: JSON.stringify(tracking),
+  });
+  assert.equal(response.status, 200);
+  const saved = await response.json();
+  assert.equal(saved.id, id);
+  assert.deepEqual(saved.tracking, { ...tracking, updatedAt: saved.tracking.updatedAt });
+  assert.ok(saved.tracking.updatedAt);
+  await server.close();
+  const reopened = await open();
+  const entry = (await jobsAt(reopened))[0];
+  for (const block of ['job', 'seen', 'triage', 'mark']) assert.deepEqual(entry[block], before[block]);
+  assert.deepEqual(entry.tracking, saved.tracking);
+  const html = await (await fetch(reopened.url)).text();
+  assert.match(html, /Etapa: Entrevista/);
+  assert.match(html, /Próximo passo: Preparar casos\./);
+  assert.match(html, /&lt;script&gt;fictício&lt;\/script&gt;/);
+  assert.match(html, /<form data-tracking>/);
+  await setMark(id, null, options);
+  assert.ok(!(await (await fetch(reopened.url)).text()).includes('<form data-tracking>'));
+});
+
+test('tracking compartilha proteção de origem, Host, JSON e tamanho; entradas inválidas não gravam', async t => {
+  const { options, server } = await setup(t);
+  const url = `${server.url}/api/jobs/${encodeURIComponent(id)}/tracking`;
+  const headers = { Origin: server.url, 'Content-Type': 'application/json' };
+  for (const patch of [{ Origin: '' }, { Origin: 'null' }, { Origin: 'https://intruso.example' },
+    { Host: 'intruso.example' }, { 'Sec-Fetch-Site': 'cross-site' }]) {
+    assert.equal(await requestStatus(url, { method: 'POST', headers: { ...headers, ...patch } }, '{"stage":"Entrevista"}'), 403);
+  }
+  assert.equal((await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })).status, 403);
+  for (const value of [null, [], {}, { stage: ' ' }, { stage: 2 }, { stage: 'Etapa', next: 2 },
+    { stage: 'Etapa', notes: null }, { stage: 'Etapa', fit: 5 }]) {
+    assert.equal((await fetch(url, { method: 'POST', headers, body: JSON.stringify(value) })).status, 400);
+  }
+  assert.equal((await fetch(url, { method: 'POST', headers, body: '{' })).status, 400);
+  assert.equal((await fetch(url, { method: 'POST', headers: { ...headers, 'Content-Type': 'text/plain' }, body: '{}' })).status, 415);
+  assert.equal((await fetch(url, { method: 'POST', headers, body: JSON.stringify({ stage: 'a'.repeat(17000) }) })).status, 413);
+  for (const target of ['gupy:ausente', '__proto__', '../../estado.json']) {
+    assert.equal((await fetch(`${server.url}/api/jobs/${encodeURIComponent(target)}/tracking`, {
+      method: 'POST', headers, body: '{"stage":"Etapa"}',
+    })).status, 404);
+  }
+  assert.equal((await loadState(options)).jobs[id].tracking, null);
+  assert.equal((await fetch(url, { method: 'POST', headers, body: '{"stage":"Etapa"}' })).status, 200);
+  assert.equal((await loadState(options)).jobs[id].tracking.next, null);
+});
+
+test('ordenação prioriza estrelas, depois publicação e coleta; sem triagem fica no fim', async t => {
+  const { options } = await setup(t, [job({ sourceId: 'sem', publishedAt: '2026-10-02' }),
+    job({ sourceId: 'alta', publishedAt: '2026-09-01' }), job({ sourceId: 'nova', publishedAt: '2026-10-01' }),
+    job({ sourceId: 'antiga', publishedAt: '2026-09-20' }), job({ sourceId: 'sem-data' })]);
+  for (const [target, fit] of [['alta', 5], ['nova', 3], ['antiga', 3], ['sem-data', 3]]) {
+    await setTriage(`gupy:${target}`, { fit, reason: 'Motivo fictício.', alerts: ['Alerta fictício.'] }, options);
+  }
+  const jobs = toJobs(await loadState(options));
+  assert.deepEqual(jobs.map(entry => entry.job.sourceId), ['alta', 'nova', 'antiga', 'sem-data', 'sem']);
+  const html = renderRows(jobs);
+  assert.match(html, /★★★★★/);
+  assert.match(html, /Motivo fictício/);
+  assert.match(html, /Alerta da triagem: Alerta fictício/);
+});

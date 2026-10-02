@@ -4,8 +4,9 @@ import { pathToFileURL } from 'node:url';
 import { collect } from '../src/collect.mjs';
 import { startServer } from '../src/page/server.mjs';
 import { openBrowser } from '../src/open-browser.mjs';
+import { stateCommand, stateCommands } from '../src/commands.mjs';
 
-const help = 'Uso: node bin/radar.mjs <comando>\n\ncollect  Coleta vagas da busca.\nopen     Abre o radar no navegador.\n--help   Mostra esta ajuda.';
+const help = 'Uso: node bin/radar.mjs <comando>\n\ncollect  Coleta vagas da busca.\nopen     Abre o radar no navegador.\npaths    Mostra os caminhos dos dados.\npending [--limit N]  Lista vagas para triagem.\nshow <id>  Mostra a vaga inteira.\ntriage <id> --fit <1 a 5> --reason "texto" [--alert "texto"]...\ndiscards  Lista os descartes.\ntrack <id> --stage "texto" [--next "texto" | --clear-next] [--notes "texto" | --clear-notes]\ntriage-run  Executa a skill de triagem no agente configurado.\nschedule on [--hours 6] | off | status\n--help   Mostra esta ajuda.';
 
 async function openCommand({ startServer: serve, openBrowser: open, signals, stdout, stderr }) {
   const server = await serve();
@@ -30,13 +31,13 @@ async function openCommand({ startServer: serve, openBrowser: open, signals, std
   return 0;
 }
 
-async function collectCommand({ collect: runCollect, stdout, stderr, signals }) {
+async function collectCommand({ collect: runCollect, stdout, stderr, signals, dataDir }) {
   const controller = new AbortController();
   const stop = () => controller.abort();
   signals.on('SIGINT', stop);
   signals.on('SIGTERM', stop);
   let summary;
-  try { summary = await runCollect({ log: stdout, signal: controller.signal }); }
+  try { summary = await runCollect({ ...(dataDir === undefined ? {} : { dataDir }), log: stdout, signal: controller.signal }); }
   finally {
     signals.removeListener('SIGINT', stop);
     signals.removeListener('SIGTERM', stop);
@@ -63,21 +64,23 @@ const commands = new Map([['collect', collectCommand], ['open', openCommand]]);
 export async function main(args = process.argv.slice(2), {
   collect: runCollect = collect, stdout = console.log, stderr = console.error,
   startServer: serve = startServer, openBrowser: open = openBrowser, signals = process,
+  ...options
 } = {}) {
   const [command, ...rest] = args;
   if (!args.length || (args.length === 1 && ['--help', '-h'].includes(command))) {
     stdout(help);
     return 0;
   }
-  if (!commands.has(command) || rest.length) {
-    stderr(`Comando inválido. ${help}`);
-    return 1;
+  if ((!commands.has(command) && !stateCommands.includes(command)) || (commands.has(command) && rest.length)) {
+    stderr('Comando ou argumentos inválidos. Use --help.');
+    return 2;
   }
   try {
-    return await commands.get(command)({ collect: runCollect, startServer: serve, openBrowser: open, signals, stdout, stderr });
+    if (stateCommands.includes(command)) return await stateCommand(command, rest, { ...options, signals, stdout, stderr });
+    return await commands.get(command)({ ...options, collect: runCollect, startServer: serve, openBrowser: open, signals, stdout, stderr });
   } catch (error) {
-    stderr(`Não foi possível ${command === 'open' ? 'abrir o radar' : 'coletar'}: ${error?.message || 'falha inesperada.'}`);
-    return 1;
+    stderr(error.exitCode === 2 ? error.message : `Não foi possível ${command === 'open' ? 'abrir o radar' : command === 'collect' ? 'coletar' : 'executar o comando'}: ${error?.message || 'falha inesperada.'}`);
+    return error.exitCode ?? 1;
   }
 }
 

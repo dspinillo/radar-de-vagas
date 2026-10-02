@@ -288,12 +288,17 @@ async function setBlock(id, block, value, dataDir) {
     mark: ['status', 'cutReason'],
     tracking: ['stage', 'next', 'notes'],
   };
-  if (input !== null) shape(input, fields[block], block);
+  if (input !== null) {
+    if (block === 'tracking') requireValid(isObject(input) && has(input, 'stage') &&
+      Object.keys(input).every(key => fields.tracking.includes(key)), 'O bloco tracking tem formato inválido.');
+    else shape(input, fields[block], block);
+  }
   return updateState(dataDir, (state, now) => {
     const target = canonicalId(state, id);
     requireValid(target !== null, 'Vaga não encontrada no estado.');
     const timestamp = { triage: 'triagedAt', mark: 'markedAt', tracking: 'updatedAt' }[block];
-    const next = input === null ? null : { ...input, [timestamp]: now };
+    const previous = block === 'tracking' ? { next: null, notes: '', ...state.jobs[target].tracking } : {};
+    const next = input === null ? null : { ...previous, ...input, [timestamp]: now };
     validateBlock(block, next);
     state.jobs[target][block] = next;
   });
@@ -309,7 +314,7 @@ export async function setMark(id, mark, { dataDir = resolveDataDir() } = {}) {
   return setBlock(id, 'mark', mark, dataDir);
 }
 
-/** Dono: pessoa. null limpa apenas o acompanhamento. */
+/** Dono: pessoa. Campos omitidos são preservados sob trava; null limpa o bloco. */
 export async function setTracking(id, tracking, { dataDir = resolveDataDir() } = {}) {
   return setBlock(id, 'tracking', tracking, dataDir);
 }

@@ -1,7 +1,7 @@
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { ensureDataDir, resolveDataDir } from '../data-dir.mjs';
-import { loadState, setMark } from '../state.mjs';
+import { loadState, setMark, setTracking } from '../state.mjs';
 import { renderPage, toJobs } from './view.mjs';
 
 const bodyLimit = 16 * 1024;
@@ -86,6 +86,17 @@ function listen(server, port) {
   });
 }
 
+function validateTracking(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value) ||
+      Object.keys(value).some(key => !['stage', 'next', 'notes'].includes(key)) ||
+      typeof value.stage !== 'string' || !value.stage.trim() ||
+      (value.next !== undefined && value.next !== null && typeof value.next !== 'string') ||
+      (value.notes !== undefined && typeof value.notes !== 'string')) {
+    throw failure(400, 'Informe uma etapa e textos válidos para o acompanhamento.');
+  }
+  return { stage: value.stage.trim(), next: value.next ?? null, notes: value.notes ?? '' };
+}
+
 /** Inicia em loopback; porta ocupada usa uma porta livre. close() é assíncrono. */
 export async function startServer({ dataDir = resolveDataDir(), port = 4317 } = {}) {
   if (!Number.isInteger(port) || port < 0 || port > 65535) {
@@ -116,10 +127,10 @@ export async function startServer({ dataDir = resolveDataDir(), port = 4317 } = 
         else send(response, 200, { jobs, sources: state.sources });
         return;
       }
-      const match = /^\/api\/jobs\/([^/]+)\/mark$/.exec(path);
+      const match = /^\/api\/jobs\/([^/]+)\/(mark|tracking)$/.exec(path);
       if (request.method === 'POST' && match) {
         if (request.headers['content-type']?.split(';')[0].trim().toLowerCase() !== 'application/json') {
-          throw failure(415, 'Envie a marcação como application/json.');
+          throw failure(415, 'Envie os dados como application/json.');
         }
         if (Number(request.headers['content-length']) > bodyLimit) {
           request.resume();
@@ -128,14 +139,15 @@ export async function startServer({ dataDir = resolveDataDir(), port = 4317 } = 
         let id;
         try { id = decodeURIComponent(match[1]); }
         catch { throw failure(400, 'Identificador malformado.'); }
-        const mark = validateMark(await readBody(request));
+        const block = match[2];
+        const value = (block === 'mark' ? validateMark : validateTracking)(await readBody(request));
         const state = await loadState(options);
         const canonical = Object.hasOwn(state.jobs, id) ? id
           : Object.hasOwn(state.aliases, id) ? state.aliases[id] : null;
         if (canonical === null) throw failure(404, 'Vaga não encontrada.');
         // id é somente chave de estado, nunca compõe um caminho no disco.
-        const updated = await setMark(id, mark, options);
-        send(response, 200, { id: canonical, mark: updated.jobs[canonical].mark });
+        const updated = await (block === 'mark' ? setMark : setTracking)(id, value, options);
+        send(response, 200, { id: canonical, [block]: updated.jobs[canonical][block] });
         return;
       }
       throw failure(404, 'Página ou rota não encontrada.');

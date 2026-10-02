@@ -1,6 +1,6 @@
 # Radar de Vagas · Arquitetura
 
-> Atualizado em **2026-10-01** · planejada, ainda sem código. Decisões com porquê: `decisions/`.
+> Atualizado em **2026-10-02** · coleta, estado, página, comandos de triagem e acompanhamento e agendamento implementados. Decisões com porquê: `decisions/`.
 
 ## 1. Camadas
 
@@ -21,17 +21,19 @@ A coleta é script e roda sem agente. O julgamento é do agente, que lê a descr
 
 ## 2. Componentes
 
-| Componente | Responsabilidade | Onde (planejado) |
+| Componente | Responsabilidade | Onde |
 |---|---|---|
 | Formato da vaga | Validar a vaga, limpar HTML, derivar identificador e chave de possível duplicata | `src/job.mjs` |
 | Fontes | Buscar vagas de um portal e devolver no formato único | `src/sources/` (um arquivo por fonte, registro em `index.mjs`) |
 | Coleta | Rodar as fontes ligadas, deduplicar e gravar as novas | `src/collect.mjs` |
 | Estado | Ler e gravar o estado sem sobrescrever marcações | `src/state.mjs` |
-| Servidor local | Servir a página e receber os cliques, só na própria máquina | `src/server.mjs` |
-| Página do radar | Tabela de vagas, inscrevi e descartar com motivo | `web/` |
+| Servidor local | Servir a página e receber marcação e acompanhamento, só na própria máquina | `src/page/server.mjs`  |
+| Página do radar | Tabela por estrelas e data, inscrevi, descarte e acompanhamento | `src/page/`  |
+| Comandos | Consultar caminhos, fila, envelope e descartes; gravar triagem e acompanhamento pelos setters | `bin/radar.mjs`, `src/commands.mjs` |
 | Onboarding | Entrevistar a pessoa e gravar perfil e busca | `skills/` |
 | Triagem | Dar estrelas, motivo e alertas a cada vaga nova | `skills/` |
-| Agendamento | Registrar e remover a tarefa no agendador do sistema | `src/schedule.mjs` |
+| Execução da triagem | Chamar `claude -p` ou `codex exec` com o prompt da skill e o caminho do repositório | `src/triage-run.mjs` |
+| Agendamento | Registrar, consultar e remover tarefa; executar coleta seguida de triagem com log local | `src/schedule.mjs`, `src/scheduled-run.mjs` (real; validação nativa em Mac e Windows pendente) |
 | Currículo por vaga | Montar o currículo ajustado a uma vaga a partir do perfil | `skills/` |
 | Munição de entrevista | Montar a página única de preparo para uma entrevista | `skills/` |
 | Guarda de privacidade | Barrar dado pessoal antes do commit | `scripts/` |
@@ -46,9 +48,25 @@ Tudo em `~/.radar-de-vagas/`, fora do repositório clonado.
 | `busca.json` | Termos, nível, localidade, modelo, idiomas, faixa por regime, fontes ligadas | Onboarding |
 | `regua.md` | Pontos de atenção aprendidos com os descartes | Triagem |
 | `estado.json` | Vagas, triagem de cada uma e marcações da pessoa | Coleta, triagem, página |
-| `empresas.json` | Empresas acompanhadas nas fontes por empresa | Pessoa, onboarding |
 | `curriculos/` | Um currículo por vaga, em HTML pronto para salvar como PDF pelo navegador | Currículo por vaga |
 | `entrevistas/` | Uma página de munição por entrevista | Munição de entrevista |
+| `agendamento.log` | Saída e erros; acima de 1 MiB, retém cerca de 256 KiB no mesmo arquivo | Executor agendado |
+| `agendamento.lock` | PID da execução ativa; impede sobreposição | Executor agendado |
+| `agendamento.xml` | Definição da tarefa do Windows enquanto ligada | Agendamento |
+
+Os comandos são infraestrutura das F2 a F5. Entrevista, julgamento, memória de descarte,
+currículo e munição continuam sendo responsabilidade das skills, sem heurísticas no código.
+As empresas acompanhadas ficam em `busca.json`. `track` mescla campos omitidos sob
+a trava do estado; `--clear-next` e `--clear-notes` limpam explicitamente. O ID de
+cada vaga aparece na tabela com botão de cópia.
+
+Ao ligar a agenda, Node e o agente configurado são resolvidos e validados antes
+de substituir uma tarefa existente. O plist guarda PATH e, quando definida,
+RADAR_DATA_DIR no ambiente. O XML do Windows passa esses valores ao executor
+como argumentos, que os aplica antes da coleta e da triagem. O PATH inclui as
+pastas de ambos os executáveis. A trava agendada verifica o PID, preserva
+processos vivos independentemente da idade e recupera processos encerrados;
+travas sem PID válido só são recuperadas após 30 segundos.
 
 ## 4. Integrações externas
 
@@ -78,10 +96,13 @@ radar-de-vagas/
 │   ├── sources/     # uma fonte por arquivo
 │   ├── collect.mjs
 │   ├── state.mjs
-│   ├── server.mjs
-│   └── schedule.mjs
-├── web/             # página do radar
-├── skills/          # onboarding, triagem, agendamento, currículo, entrevista
+│   ├── commands.mjs
+│   ├── triage-run.mjs
+│   ├── schedule.mjs
+│   ├── scheduled-run.mjs
+│   └── page/         # servidor, página, estilos e testes
+├── bin/radar.mjs     # comandos
+├── skills/          # onboarding, triagem, acompanhamento, curriculo-por-vaga, entrevista
 ├── examples/        # perfil e busca fictícios
 ├── scripts/         # guarda de privacidade
 └── test/

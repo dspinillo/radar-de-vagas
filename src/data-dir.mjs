@@ -69,7 +69,7 @@ const isText = value => typeof value === 'string' && value.trim() !== '';
 export function validateSearch(search) {
   if (!isObject(search)) return ['a busca precisa ser um objeto'];
   const problems = [];
-  const allowed = ['aviso', 'termos', 'localidade', 'modelo', 'idadeMaximaDias', 'fontes', 'empresas', 'detalhesNovosPorFonte', 'prazoFonteSegundos'];
+  const allowed = ['aviso', 'termos', 'localidade', 'modelo', 'idadeMaximaDias', 'fontes', 'empresas', 'detalhesNovosPorFonte', 'prazoFonteSegundos', 'tetoTriagemPorRodada', 'agente'];
   for (const key of Object.keys(search)) {
     if (!allowed.includes(key)) problems.push(`campo desconhecido na busca: "${key}"`);
   }
@@ -86,7 +86,10 @@ export function validateSearch(search) {
   if (search.idadeMaximaDias !== null && (!Number.isSafeInteger(search.idadeMaximaDias) || search.idadeMaximaDias < 1)) {
     problems.push('"idadeMaximaDias" precisa ser um inteiro positivo ou null');
   }
-  for (const key of ['detalhesNovosPorFonte', 'prazoFonteSegundos']) {
+  if ('agente' in search && !['claude', 'codex'].includes(search.agente)) {
+    problems.push('"agente" precisa ser "claude" ou "codex", ou ficar ausente');
+  }
+  for (const key of ['detalhesNovosPorFonte', 'prazoFonteSegundos', 'tetoTriagemPorRodada']) {
     if (key in search && (!Number.isSafeInteger(search[key]) || search[key] < 1 ||
         (key === 'prazoFonteSegundos' && search[key] > 2147483))) {
       problems.push(`"${key}" precisa ser um inteiro positivo${key === 'prazoFonteSegundos' ? ' até 2147483' : ''}`);

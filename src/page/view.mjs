@@ -27,7 +27,8 @@ export function toJobs(state) {
   }
   return Object.entries(state.jobs).map(([id, entry]) => ({
     id, ...entry, possibleDuplicate: counts.get(entry.seen.dedupKey) > 1,
-  })).sort((a, b) => (b.job.publishedAt ?? '').localeCompare(a.job.publishedAt ?? '') ||
+  })).sort((a, b) => (b.triage?.fit ?? 0) - (a.triage?.fit ?? 0) ||
+    (b.job.publishedAt ?? '').localeCompare(a.job.publishedAt ?? '') ||
     b.seen.firstSeenAt.localeCompare(a.seen.firstSeenAt) || a.id.localeCompare(b.id));
 }
 
@@ -45,11 +46,12 @@ export function filterJobs(jobs, status, query) {
 }
 
 export function renderRows(jobs) {
-  return jobs.map(({ id, job, seen, mark, triage, possibleDuplicate }) => {
+  return jobs.map(({ id, job, seen, mark, triage, tracking, possibleDuplicate }) => {
     const key = escapeHtml(id);
     return `<tr data-id="${key}">
       <td class="company">${escapeHtml(job.company)}</td>
       <th scope="row" class="vacancy"><strong>${escapeHtml(job.title)}</strong>
+        <div><small class="muted">ID: ${key}</small> <button type="button" data-action="copy-id" aria-label="Copiar identificador ${key}">Copiar ID</button></div>
         <details><summary>Descrição completa</summary><p class="description">${escapeHtml(job.description)}</p></details>
       </th>
       <td>${escapeHtml(job.location ?? 'Não informado')}</td>
@@ -64,6 +66,13 @@ export function renderRows(jobs) {
       <td class="decision"><span class="status">${statuses[mark?.status] ?? 'Nova'}</span>
         ${mark ? `<p>${escapeHtml(mark.cutReason ?? 'Candidatura registrada.')}</p><button type="button" data-action="undo">Desfazer marcação</button>` : `<div class="actions"><button type="button" data-action="apply">Inscrevi</button><button type="button" data-action="discard">Descartar</button></div>
         <form hidden><label>Motivo do descarte<textarea name="cutReason" required rows="2" maxlength="2000" placeholder="O que não combina com sua busca?"></textarea></label><div class="actions"><button type="submit">Confirmar descarte</button><button type="button" data-action="cancel">Cancelar</button></div></form>`}
+        ${mark?.status === 'applied' ? `<p>Etapa: ${escapeHtml(tracking?.stage ?? 'Inscrita')}</p><p>Próximo passo: ${escapeHtml(tracking?.next || 'Não definido')}</p>
+        <details><summary>Editar acompanhamento</summary><form data-tracking>
+          <label>Etapa<input name="stage" required maxlength="200" value="${escapeHtml(tracking?.stage ?? 'Inscrita')}"></label>
+          <label>Próximo passo<textarea name="next" rows="2" maxlength="2000">${escapeHtml(tracking?.next)}</textarea></label>
+          <label>Notas<textarea name="notes" rows="2" maxlength="2000">${escapeHtml(tracking?.notes)}</textarea></label>
+          <div class="actions"><button type="submit">Salvar acompanhamento</button></div>
+        </form></details>` : ''}
       </td>
     </tr>`;
   }).join('');
@@ -89,7 +98,7 @@ export function renderPage(jobs, sources) {
 <p id="no-results" hidden>Nenhuma vaga com esses filtros. Tente outra busca ou selecione Todas.</p>
 <p id="scroll-hint" class="scroll-hint"${jobs.length ? '' : ' hidden'}>Deslize a tabela para os lados para ver os detalhes e as ações.</p>
 <div id="table-wrap" class="table-wrap" tabindex="0" role="region" aria-label="Tabela de vagas, com rolagem horizontal"${jobs.length ? '' : ' hidden'}>
-<table><caption class="sr-only">Vagas ordenadas pela publicação mais recente; datas desconhecidas aparecem ao final.</caption><thead><tr><th scope="col">Empresa</th><th scope="col">Título</th><th scope="col">Local</th><th scope="col">Modelo</th><th scope="col">Fonte</th><th scope="col">Publicação</th><th scope="col">Primeira vez vista</th><th scope="col">Encaixe e motivo</th><th scope="col">Anúncio</th><th scope="col">Sua decisão</th></tr></thead>
+<table><caption class="sr-only">Vagas ordenadas por estrelas e depois pela publicação mais recente; datas desconhecidas aparecem ao final de cada nota.</caption><thead><tr><th scope="col">Empresa</th><th scope="col">Título</th><th scope="col">Local</th><th scope="col">Modelo</th><th scope="col">Fonte</th><th scope="col">Publicação</th><th scope="col">Primeira vez vista</th><th scope="col">Encaixe e motivo</th><th scope="col">Anúncio</th><th scope="col">Sua decisão</th></tr></thead>
 <tbody id="jobs">${renderRows(jobs)}</tbody></table></div></section>
 <noscript><p>Ative o JavaScript para buscar, filtrar e registrar suas decisões.</p></noscript>
 <footer>Dados locais · Inscrevi registra uma candidatura que você já enviou.</footer>

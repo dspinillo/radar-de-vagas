@@ -66,7 +66,7 @@ test('ajuda em português sem argumento e argumentos inválidos não iniciam ser
   const options = { stdout: value => output.push(value), stderr: () => {},
     startServer: () => assert.fail('Não deve iniciar.'), collect: () => assert.fail('Não deve coletar.') };
   for (const args of [[], ['-h'], ['--help']]) assert.equal(await main(args, options), 0);
-  for (const args of [['open', 'extra'], ['inexistente']]) assert.equal(await main(args, options), 1);
+  for (const args of [['open', 'extra'], ['inexistente']]) assert.equal(await main(args, options), 2);
   assert.ok(output.every(value => /Uso:/.test(value) && /collect/.test(value) && /open/.test(value)));
 });
 for (const [platform, executable, prefix] of [
