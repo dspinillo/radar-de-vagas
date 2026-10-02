@@ -32,5 +32,8 @@
 - **LinkedIn sem login.** Responde, mas limita por volume: manter cerca de um segundo entre chamadas.
 - **Teste sem rede não mostra custo de volume.** A coleta passava em todos os testes e levava minutos em silêncio com a busca de exemplo, porque um termo comum devolve centenas de vagas e cada uma pede uma busca de detalhe. Rodar a coleta real antes de fechar a tarefa.
 - **Quadro de vagas vazio responde 200.** Greenhouse e Lever devolvem lista vazia para empresa sem vaga aberta. Zero vagas não prova que a fonte quebrou nem que o identificador da empresa está errado.
+- **Julgamento vai em skill, não em código.** Onboarding, triagem, currículo e entrevista são instruções em markdown; o código só lê e grava o estado por comandos. As fases F2 a F5 custaram cerca de 400 linhas de código e 240 de skill.
+- **Agente em modo não interativo precisa de permissão explícita.** Sem liberar os comandos do radar e a pasta de dados, a triagem agendada roda e não grava nada, sem erro visível.
+- **Esforço máximo do agente não compensa na triagem.** Quatro vagas em 8 minutos no máximo contra 3 vagas em 71 segundos no médio. Vaga fraca não merece seis alertas.
 - **Tester independente em sessão nova paga o custo.** Na F1 ele achou dez falhas que os testes de quem escreveu não pegavam, três delas graves nas fontes (paginação, falso bloqueio, descrição truncada).
 - **Indeed, Glassdoor e Jooble.** Bloqueiam acesso automatizado (403). Ficam fora.

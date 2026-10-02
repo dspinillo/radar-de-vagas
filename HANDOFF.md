@@ -28,10 +28,13 @@ Smoke:    node scripts/smoke-sources.mjs (termos e empresas reais só por argume
 
 ## Próxima ação (checklist)
 
-1. [x] Commit e push da F1 (T1.2 a T1.6 e T1.8). README conferido a partir do clone público no Mac.
-2. [ ] Validar o README no Windows (pendência do mantenedor).
-3. [ ] Fatiar a F2 (onboarding e triagem) em tarefas T2.x no `ROADMAP.md`.
+1. [ ] Mantenedor: instalar o plugin, rodar o onboarding com o próprio perfil, `collect`, triagem, e anotar onde a triagem errou.
+2. [ ] Ajustar `skills/triagem/SKILL.md` com o que o uso real mostrar.
+3. [ ] Validar README, agendamento e página no Windows.
+4. [ ] Lançamento: alguém de fora instala seguindo só o README; vídeo de demonstração.
 
 ## Como validar de verdade
 
 Teste sem rede não mostra custo de volume. Antes de fechar tarefa de coleta, rode `node bin/radar.mjs collect` com `RADAR_DATA_DIR` apontando para uma pasta temporária e um arquivo de busca com empresas reais que fique fora do repositório.
+
+Para validar uma skill sem gastar a assinatura do Claude: `codex exec -s workspace-write --add-dir "$RADAR_DATA_DIR" "Leia skills/<nome>/SKILL.md e execute..."` com a entrada padrão fechada, usando `examples/perfil.md` numa pasta de dados temporária. Dentro da sandbox do agente, `node --test` falha por bloqueio de porta local; isso não é falha do projeto.

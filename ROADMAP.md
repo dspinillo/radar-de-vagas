@@ -9,6 +9,8 @@
 
 ## Marco atual
 
+🟡 **Lançamento da 0.1.** Código de F1 a F5 entregue; o que falta está na tabela "F2 a F6" abaixo e depende de uso real e de Windows.
+
 🟡 **F1 · coleta e radar local.** Código entregue em 2026-10-02 (T1.2 a T1.6). Publicado. Falta validar o README no Windows (T1.8). Fecha quando a coleta traz vagas reais de pelo menos quatro fontes e a página local grava inscrevi e descartar com motivo.
 
 ## Fases
@@ -24,6 +26,18 @@
 | F6 | Lançamento 0.1 | Alguém de fora instala em menos de dez minutos seguindo só o README. Vídeo de demonstração publicado. |
 | F7 | Mais fontes | Novas fontes por empresa e por termo, com guia para contribuir com uma fonte. |
 | F8 | Folha de respostas e preenchimento assistido | A folha de respostas do formulário sai pronta para revisar e colar. O preenchimento no navegador só entra se resistir a marcação de formulário, captcha e regras das plataformas, e sempre para antes do enviar. |
+
+## F2 a F6 · entregue em 2026-10-02 (versão 0.1.0)
+
+O julgamento ficou em skills de markdown (`skills/`); o código são comandos finos sobre o estado, o agendamento e a página.
+
+| Fase | Estado | Entregue | Falta |
+|---|---|---|---|
+| F2 | 🟡 | Skills de onboarding e triagem; comandos `paths`, `pending`, `show`, `triage`; página com estrelas, motivo e alertas. Triagem validada com agente real e perfil fictício. | Onboarding com pessoa real; calibrar a triagem com perfil e vagas reais. |
+| F3 | 🟡 | Comando `discards` e memória de descarte na skill de triagem. Em rodada real, um descarte virou alerta em vaga parecida, sem cortar. | Observar o aprendizado ao longo de várias rodadas. |
+| F4 | 🟡 | `schedule on`, `off` e `status`. Validado de verdade no Mac (launchd). | Validar no Windows (Agendador de Tarefas). |
+| F5 | 🟡 | Skills de currículo por vaga, entrevista e acompanhamento; comando `track`; etapa e próximo passo na página. Os dois documentos foram gerados com agente real e nada saiu de fora do perfil. | Conferir a impressão em PDF; uso com perfil real. |
+| F6 | 🟡 | Versão 0.1.0, README com instalação do plugin e fluxo de uso. | Alguém de fora instalar em menos de dez minutos; vídeo de demonstração. |
 
 ## F1 · tarefas
 
