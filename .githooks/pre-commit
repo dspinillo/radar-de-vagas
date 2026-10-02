@@ -1,0 +1,11 @@
+#!/bin/sh
+# Barra o commit se houver dado pessoal no repositório.
+# Ativado com: git config core.hooksPath .githooks
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "Guarda de privacidade: Node 20+ não encontrado no PATH. Instale o Node para poder commitar." >&2
+  exit 1
+fi
+
+node scripts/check-privacy.mjs
+exit $?

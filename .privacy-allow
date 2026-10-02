@@ -1,0 +1,5 @@
+# Exceções da guarda de privacidade (scripts/check-privacy.mjs).
+# Uma string exata por linha: se uma linha do repositório bater com uma
+# linha aqui, ela não é checada. Linhas começando com # são comentário.
+
+Copyright (c) 2026 Dhiego Spinillo

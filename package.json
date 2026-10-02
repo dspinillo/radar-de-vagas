@@ -1,0 +1,13 @@
+{
+  "name": "radar-de-vagas",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test",
+    "check:privacy": "node scripts/check-privacy.mjs"
+  }
+}
