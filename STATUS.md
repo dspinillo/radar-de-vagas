@@ -1,11 +1,11 @@
 # Radar de Vagas · Status
 
-> Atualize ao final de cada sessão. Última atualização: **2026-10-02** · frente ativa: F1 · HEAD: `d77e4d5` + T1.2 a T1.6 e T1.8 na árvore de trabalho, ainda sem commit
+> Atualize ao final de cada sessão. Última atualização: **2026-10-02** · frente ativa: F1 · HEAD: `3dcff2b` (código da F1) publicado
 > Legenda: ✅ feito · 🟡 parcial · ▶️ próximo · ⏸️ aguardando · 🔒 bloqueado · ⬜ não iniciado
 
 ## Estado atual (leia primeiro)
 
-A F1 está com o código completo: seis fontes, coleta com estado e deduplicação, página local e README. `node bin/radar.mjs collect` e `node bin/radar.mjs open` funcionam de ponta a ponta. Falta commit e push, e validar o README no Windows.
+A F1 está com o código completo: seis fontes, coleta com estado e deduplicação, página local e README. `node bin/radar.mjs collect` e `node bin/radar.mjs open` funcionam de ponta a ponta. Publicado em 2026-10-02, com o workflow do GitHub verde. Falta validar o README no Windows.
 
 | Bloco | Estado |
 |---|---|
@@ -25,9 +25,10 @@ A F1 está com o código completo: seis fontes, coleta com estado e deduplicaç�
 - **Validado em uso real (pasta de dados temporária, busca com empresas reais fora do repositório):** as seis fontes trouxeram vagas com descrição inteira; segunda coleta não duplica; descartar com motivo pela página grava e sobrevive a nova coleta; descartar sem motivo devolve 400 e POST de outra origem devolve 403. Passo a passo do Mac no README validado em cópia limpa.
 - **Corrigido por achado de Tester independente:** lacuna em lista de alertas, byte inválido no estado, trava esquecida por processo interrompido, paginação da Gupy, falso bloqueio do LinkedIn, descrição truncada por comentário HTML, página com situação velha após marcar, `lastSeenAt` congelado, fonte que nunca responde, contagem de novas em coletas simultâneas.
 - **Corrigido por achado em uso real:** primeira coleta levava minutos em silêncio. Agora filtra idade na listagem, busca detalhes em paralelo (4), tem teto de detalhes novos por fonte (`detalhesNovosPorFonte`, padrão 150), mostra progresso e grava ao fim de cada fonte. Rodada com a busca de exemplo: cerca de 26 s.
-- **Pendente:** commit e push (o README aponta para o clone público, que ainda está em `d77e4d5`). Validação do README no Windows. Executar o workflow do GitHub com o código novo.
+- **Publicado:** commit e push feitos; a partir de um clone público limpo, os 266 testes passam e a primeira coleta traz 149 vagas da Gupy com a busca de exemplo. Workflow do GitHub verde.
+- **Pendente:** validação do README no Windows.
 - **Dívidas:** a página embute as descrições (cerca de 470 KB com 78 vagas), vai pesar com milhares; LinkedIn responde 429 depois de cerca de dez detalhes na mesma rodada; a busca de exemplo usa empresas inventadas, então só a Gupy traz vaga real antes de a pessoa editar o arquivo; a guarda abre um processo git por arquivo; identificador numérico de 11 dígitos pode ser acusado como celular.
-- **Próxima ação:** ▶️ commit e push da F1 com ok do mantenedor; depois F2 (onboarding e triagem), que ainda precisa ser fatiada em tarefas T2.x.
+- **Próxima ação:** ▶️ fatiar a F2 (onboarding e triagem) em tarefas T2.x.
 
 ## Histórico de sessões
 

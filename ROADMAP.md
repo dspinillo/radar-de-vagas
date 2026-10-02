@@ -9,7 +9,7 @@
 
 ## Marco atual
 
-🟡 **F1 · coleta e radar local.** Código entregue em 2026-10-02 (T1.2 a T1.6). Falta publicar e validar o README no Windows (T1.8). Fecha quando a coleta traz vagas reais de pelo menos quatro fontes e a página local grava inscrevi e descartar com motivo.
+🟡 **F1 · coleta e radar local.** Código entregue em 2026-10-02 (T1.2 a T1.6). Publicado. Falta validar o README no Windows (T1.8). Fecha quando a coleta traz vagas reais de pelo menos quatro fontes e a página local grava inscrevi e descartar com motivo.
 
 ## Fases
 

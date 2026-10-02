@@ -28,7 +28,7 @@ Smoke:    node scripts/smoke-sources.mjs (termos e empresas reais só por argume
 
 ## Próxima ação (checklist)
 
-1. [ ] Commit e push da F1 (T1.2 a T1.6 e T1.8), com ok do mantenedor. Depois do push, repetir o passo a passo do README a partir do clone público.
+1. [x] Commit e push da F1 (T1.2 a T1.6 e T1.8). README conferido a partir do clone público no Mac.
 2. [ ] Validar o README no Windows (pendência do mantenedor).
 3. [ ] Fatiar a F2 (onboarding e triagem) em tarefas T2.x no `ROADMAP.md`.
 
