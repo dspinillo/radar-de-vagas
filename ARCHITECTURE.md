@@ -23,7 +23,8 @@ A coleta é script e roda sem agente. O julgamento é do agente, que lê a descr
 
 | Componente | Responsabilidade | Onde (planejado) |
 |---|---|---|
-| Fontes | Buscar vagas de um portal e devolver no formato único | `src/sources/` (um arquivo por fonte) |
+| Formato da vaga | Validar a vaga, limpar HTML, derivar identificador e chave de possível duplicata | `src/job.mjs` |
+| Fontes | Buscar vagas de um portal e devolver no formato único | `src/sources/` (um arquivo por fonte, registro em `index.mjs`) |
 | Coleta | Rodar as fontes ligadas, deduplicar e gravar as novas | `src/collect.mjs` |
 | Estado | Ler e gravar o estado sem sobrescrever marcações | `src/state.mjs` |
 | Servidor local | Servir a página e receber os cliques, só na própria máquina | `src/server.mjs` |
@@ -73,6 +74,7 @@ Nenhuma fonte usa login nem credencial da pessoa.
 ```
 radar-de-vagas/
 ├── src/
+│   ├── job.mjs      # formato da vaga
 │   ├── sources/     # uma fonte por arquivo
 │   ├── collect.mjs
 │   ├── state.mjs

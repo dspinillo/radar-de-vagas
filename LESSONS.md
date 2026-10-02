@@ -9,7 +9,13 @@
 - **Republicar o radar apagou marcações.** Gerar a página de novo sem ler o estado atual sobrescreveu o que a pessoa tinha marcado → a coleta só adiciona vagas com identificador inexistente e nunca altera marcação.
 - **Alerta por e-mail dos portais rende pouco.** Cerca de uma vaga por dia, com encaixe fraco → a busca ativa é a fonte principal.
 
+- **Limpeza de HTML que apagava a descrição.** Duas versões seguidas de `stripHtml` passavam em todos os testes do autor e perdiam texto em HTML malformado: uma aspa ou um `<script>` sem fechamento engolia o resto do anúncio → a regra é "na dúvida, preserva o texto", com teste de propriedade em entradas malformadas e comparação com um parser de navegador.
+- **Guarda de privacidade que lia o disco.** A checagem olhava o arquivo do disco e não o que estava preparado para commit, e pulava em silêncio arquivos com acento no nome → ler sempre do índice do git, inclusive as exceções, e tratar leitura que falha como erro.
+- **Limite de tempo justo em teste.** Um teto de 200 ms falhava à toa com a máquina ocupada → teste de desempenho usa limite folgado, que só pega a diferença entre linear e quadrático.
+
 ## Padrões que funcionaram
+
+- **Tester independente do autor.** Nas duas primeiras tarefas, os testes de quem escreveu passavam e o ataque de outro agente achou as falhas que importavam.
 
 - **Alerta em vez de corte.** A mesma exigência que elimina uma vaga mediana é aceitável numa vaga excepcional. Quem pesa isso é a pessoa.
 - **Motivo de descarte escrito pela pessoa.** Calibra melhor do que qualquer inferência a partir dos cliques.

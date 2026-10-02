@@ -12,8 +12,9 @@ Uma ferramenta pública e gratuita de busca de vagas que roda na máquina da pes
 Dir:      onde o repositório foi clonado
 Dados:    ~/.radar-de-vagas/ (fora do repositório, criada na T1.2)
 Branch:   main
-Build:    não há código ainda
-Testes:   node --test (a partir da F1)
+Hook:     git config core.hooksPath .githooks (uma vez por clone)
+Testes:   node --test
+Guarda:   node scripts/check-privacy.mjs
 ```
 
 ## Cuidados para a próxima sessão
@@ -24,6 +25,6 @@ Testes:   node --test (a partir da F1)
 
 ## Próxima ação (checklist)
 
-1. [ ] T1.1: formato da vaga e contrato de fonte.
-2. [ ] T1.7: guarda de privacidade antes de qualquer outro código.
-3. [ ] T1.2 em diante, na ordem das dependências do `ROADMAP.md`.
+1. [ ] T1.2: pasta de dados, arquivo de busca e módulo de estado (decisão 0003).
+2. [ ] T1.3 e T1.4: fontes, seguindo `docs/contrato-de-fonte.md`.
+3. [ ] T1.5, T1.6 e T1.8, na ordem das dependências do `ROADMAP.md`.

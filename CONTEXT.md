@@ -22,6 +22,7 @@
 | Estado | Vagas, triagens e marcações | `estado.json` |
 | Marcação | Decisão da pessoa sobre uma vaga: inscrevi ou descartar | `status` |
 | Motivo do descarte | O que a pessoa escreveu ao descartar | `cutReason` |
+| Possível duplicata | Vagas de fontes diferentes com empresa e título parecidos. É só um aviso; fusão exige o mesmo link de inscrição | `dedupKey` |
 | Radar | A página local com a tabela de vagas | `web/` |
 | Acompanhamento | A parte do radar com as vagas em que a pessoa se inscreveu e o andamento de cada processo | `tracking` |
 | Próximo passo | O que a pessoa precisa fazer numa candidatura | `next` |
