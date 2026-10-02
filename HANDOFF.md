@@ -1,6 +1,6 @@
 # Radar de Vagas · Handoff
 
-> Como retomar este projeto amanhã (pessoa ou IA). Atualizado em **2026-10-01** · branch `main`
+> Como retomar este projeto amanhã (pessoa ou IA). Atualizado em **2026-10-02** · branch `main`
 
 ## Objetivo acordado
 
@@ -10,11 +10,14 @@ Uma ferramenta pública e gratuita de busca de vagas que roda na máquina da pes
 
 ```text
 Dir:      onde o repositório foi clonado
-Dados:    ~/.radar-de-vagas/ (fora do repositório, criada na T1.2)
+Dados:    ~/.radar-de-vagas/ (fora do repositório; RADAR_DATA_DIR troca a pasta, use em teste)
 Branch:   main
 Hook:     git config core.hooksPath .githooks (uma vez por clone)
 Testes:   node --test
 Guarda:   node scripts/check-privacy.mjs
+Coleta:   node bin/radar.mjs collect
+Página:   node bin/radar.mjs open
+Smoke:    node scripts/smoke-sources.mjs (termos e empresas reais só por argumento)
 ```
 
 ## Cuidados para a próxima sessão
@@ -25,6 +28,10 @@ Guarda:   node scripts/check-privacy.mjs
 
 ## Próxima ação (checklist)
 
-1. [ ] T1.2: pasta de dados, arquivo de busca e módulo de estado (decisão 0003).
-2. [ ] T1.3 e T1.4: fontes, seguindo `docs/contrato-de-fonte.md`.
-3. [ ] T1.5, T1.6 e T1.8, na ordem das dependências do `ROADMAP.md`.
+1. [ ] Commit e push da F1 (T1.2 a T1.6 e T1.8), com ok do mantenedor. Depois do push, repetir o passo a passo do README a partir do clone público.
+2. [ ] Validar o README no Windows (pendência do mantenedor).
+3. [ ] Fatiar a F2 (onboarding e triagem) em tarefas T2.x no `ROADMAP.md`.
+
+## Como validar de verdade
+
+Teste sem rede não mostra custo de volume. Antes de fechar tarefa de coleta, rode `node bin/radar.mjs collect` com `RADAR_DATA_DIR` apontando para uma pasta temporária e um arquivo de busca com empresas reais que fique fora do repositório.
