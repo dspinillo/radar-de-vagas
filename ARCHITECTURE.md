@@ -33,7 +33,7 @@ A coleta é script e roda sem agente. O julgamento é do agente, que lê a descr
 | Onboarding | Entrevistar a pessoa e gravar perfil e busca | `skills/` |
 | Triagem | Dar estrelas, motivo e alertas a cada vaga nova | `skills/` |
 | Execução da triagem | Chamar `claude -p` ou `codex exec` com o prompt da skill e o caminho do repositório | `src/triage-run.mjs` |
-| Agendamento | Registrar, consultar e remover tarefa; executar coleta seguida de triagem com log local | `src/schedule.mjs`, `src/scheduled-run.mjs` (real; validação nativa em Mac e Windows pendente) |
+| Agendamento | Registrar, consultar e remover tarefa; executar coleta seguida de triagem com log local | `src/schedule.mjs`, `src/scheduled-run.mjs` (real; validado no Mac, validação nativa em Windows e Linux pendente) |
 | Currículo por vaga | Montar o currículo ajustado a uma vaga a partir do perfil | `skills/` |
 | Munição de entrevista | Montar a página única de preparo para uma entrevista | `skills/` |
 | Guarda de privacidade | Barrar dado pessoal antes do commit | `scripts/` |
@@ -110,4 +110,4 @@ radar-de-vagas/
 
 ## 6. Build & tooling
 
-Node 20 ou superior, sem dependências de terceiros. Testes com `node --test`. Agendamento pelo launchd no Mac e pelo Agendador de Tarefas no Windows.
+Node 20 ou superior, sem dependências de terceiros. Testes com `node --test`. Agendamento pelo launchd no Mac, pelo Agendador de Tarefas no Windows e por timer do systemd de usuário no Linux.

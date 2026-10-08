@@ -1,6 +1,6 @@
 # Radar de Vagas · Status
 
-> Atualize ao final de cada sessão. Última atualização: **2026-10-02** · frente ativa: lançamento da 0.1 · versão 0.1.0
+> Atualize ao final de cada sessão. Última atualização: **2026-10-08** · frente ativa: lançamento da 0.1 · versão 0.1.0
 > Legenda: ✅ feito · 🟡 parcial · ▶️ próximo · ⏸️ aguardando · 🔒 bloqueado · ⬜ não iniciado
 
 ## Estado atual (leia primeiro)
@@ -21,6 +21,18 @@ A versão 0.1.0 está com o código de F1 a F5 entregue: coleta em seis fontes, 
 
 ## Onde paramos (última sessão)
 
+- **Feito nesta sessão (2026-10-06):** primeiro uso simplificado depois de uma instalação no Linux. Comando `setup` (`npm run setup`), agendamento no Linux por timer do systemd de usuário, README reescrito em torno de um Começo rápido de três passos, referência movida para `docs/referencia.md`, skill de onboarding ajustada. Suíte: 306 testes passando, guarda de privacidade limpa.
+- **Validado:** `npm run setup` e a primeira coleta com a busca de exemplo, no Mac, em cópia limpa com pasta de dados temporária.
+- **Acrescentado em 2026-10-08:** seção do README para uso sem terminal, pelo app de desktop (aba Code do Claude e app do Codex). Publicado junto com o restante desta sessão.
+- **Não validado:** uso pelo app de desktop; agendamento no Linux em máquina real (só `systemctl` injetado nos testes); onboarding com pessoa; tudo no Windows.
+- **Dívidas:** as anteriores continuam. No Mac e no Linux, `schedule status` não informa a próxima execução.
+- **Próxima ação:** ▶️ o mantenedor refaz a instalação no Linux seguindo só o Começo rápido, roda `schedule on` e confere com `systemctl --user list-timers`. Depois, onboarding com o próprio perfil, Windows e o lançamento.
+
+## Histórico de sessões
+
+<details>
+<summary>2026-10-02 (segunda parte) · 0.1.0</summary>
+
 - **Feito nesta sessão (segunda parte):** comandos `paths`, `pending`, `show`, `triage`, `discards`, `track`, `triage-run` e `schedule`; cinco skills em `skills/`; manifesto do plugin do Claude Code e `AGENTS.md` para o Codex; página com estrelas, motivo, alertas, identificador com botão de copiar e etapa da candidatura. Suíte: 300 testes passando, guarda de privacidade limpa.
 - **Validado com agente real (Codex, perfil fictício, pasta de dados temporária):** a triagem gravou estrelas, motivo e alertas pelos comandos e não tocou em marcação; um descarte anterior virou alerta de memória em vaga parecida e entrou na régua como observação; currículo por vaga e página de entrevista foram gerados sem nada de fora do perfil, com as lacunas listadas.
 - **Validado de verdade no Mac:** `schedule on` instalou no launchd, a rodada disparou sozinha, gravou o log, e `schedule off` não deixou resto.
@@ -30,7 +42,7 @@ A versão 0.1.0 está com o código de F1 a F5 entregue: coleta em seis fontes, 
 - **Dívidas:** as da F1 continuam (página embute descrições, LinkedIn responde 429 depois de cerca de dez detalhes, busca de exemplo com empresas inventadas). No Mac, `schedule status` não informa a próxima execução.
 - **Próxima ação:** ▶️ o mantenedor roda o onboarding com o próprio perfil, uma coleta e uma triagem reais, e anota o que a triagem errou. Depois, Windows e o lançamento.
 
-## Histórico de sessões
+</details>
 
 <details>
 <summary>2026-10-02 (primeira parte) · F1 publicada</summary>

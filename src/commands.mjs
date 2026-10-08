@@ -4,8 +4,9 @@ import { initializeDataDir, loadSearch } from './data-dir.mjs';
 import { loadState, setTriage, setTracking } from './state.mjs';
 import { runTriage } from './triage-run.mjs';
 import { schedule } from './schedule.mjs';
+import { setup } from './setup.mjs';
 
-export const stateCommands = ['paths', 'pending', 'show', 'triage', 'discards', 'track', 'triage-run', 'schedule'];
+export const stateCommands = ['setup', 'paths', 'pending', 'show', 'triage', 'discards', 'track', 'triage-run', 'schedule'];
 const usage = message => { throw Object.assign(new Error(message), { exitCode: 2 }); };
 
 function flags(args, allowed, switches = []) {
@@ -33,7 +34,8 @@ function positive(value, label) {
 export async function stateCommand(command, args, options) {
   const { stdout, stderr } = options;
   const json = value => stdout(JSON.stringify(value));
-  if (['paths', 'discards', 'triage-run'].includes(command) && args.length) usage('Este comando não recebe argumentos.');
+  if (['setup', 'paths', 'discards', 'triage-run'].includes(command) && args.length) usage('Este comando não recebe argumentos.');
+  if (command === 'setup') return setup(options);
   if (command === 'paths') {
     const dataDir = await initializeDataDir(options);
     const resumes = join(dataDir, 'curriculos'), interviews = join(dataDir, 'entrevistas');

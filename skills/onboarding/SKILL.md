@@ -5,7 +5,8 @@ description: Entrevista em português para iniciar ou atualizar o Radar de Vagas
 
 # Onboarding
 
-1. Execute `node bin/radar.mjs paths` na raiz do clone do Radar de Vagas.
+1. Execute `node bin/radar.mjs setup` e depois `node bin/radar.mjs paths` na raiz do clone.
+   O `setup` informa agentes encontrados e se o agendamento existe neste sistema; guarde para o passo 9.
    Leia os arquivos existentes em `profile` e `search`; preserve respostas e configurações não alteradas.
    Os caminhos retornados são a única referência para dados privados, sempre fora do repositório.
 2. Entreviste em português, com **uma pergunta por mensagem**, aguardando a resposta.
@@ -31,7 +32,9 @@ description: Entrevista em português para iniciar ou atualizar o Radar de Vagas
    Explique que cada julgamento consome a assinatura ou cota do agente; teto baixo deixa fila.
    Esse teto não é `detalhesNovosPorFonte`, que limita a coleta e não o julgamento.
 9. Pergunte se quer rodar manualmente ou a cada 6 horas. Avise que máquina desligada não roda
-   e que Windows não foi validado. Depois pergunte qual agente usar, Claude Code, Codex ou nenhum.
+   e que Windows e Linux (systemd de usuário) não foram validados em máquina real.
+   Se o `setup` disse que o agendamento é indisponível, não ofereça: informe que fica manual.
+   Depois pergunte qual agente usar, Claude Code, Codex ou nenhum.
    Explique que a automação precisa do agente escolhido instalado e autenticado na máquina.
 10. Grave `perfil.md` em `profile`: trajetória, currículo base, conteúdo do LinkedIn, formação,
     idiomas, casos e entregas com IDs estáveis (E01, E02), fontes e pendências explícitas.
@@ -51,10 +54,12 @@ description: Entrevista em português para iniciar ou atualizar o Radar de Vagas
     `node bin/radar.mjs schedule off`; confira com `node bin/radar.mjs schedule status`.
     Sem `agente`, explique que a agenda coleta, mas não faz a triagem automaticamente.
     Só confirme gravação e agendamento após sucesso; erro não autoriza editar estado nem agendador.
+    Se `schedule on` falhar, mostre a mensagem, deixe no modo manual e siga; não tente outro agendador.
 13. Termine com revisão estilo ATS do currículo e LinkedIn: pontos fortes, lacunas e sugestões
     concretas de título, resumo, experiências e palavras-chave sustentadas pelos fatos recebidos.
     Mostre antes/depois e a entrega de origem, sem prometer nota ATS ou contratação.
     Se algum material não foi fornecido, declare a revisão pendente desse material.
+14. Feche com os próximos passos exatos: `npm run collect`, pedir "Faça a triagem" e `npm run open`.
 
 Nunca invente cargo, datas, idioma, tecnologia ou métrica. Não publique nem envie candidaturas.
 Nunca leia ou edite `estado.json`, importe módulos internos ou invente comandos.

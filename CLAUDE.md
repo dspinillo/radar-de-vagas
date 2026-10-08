@@ -4,6 +4,10 @@
 
 Leia nesta ordem: `STATUS.md` (onde paramos) → `HANDOFF.md` (como retomar) → a tarefa TX.Y no `ROADMAP.md`. Vocabulário: `CONTEXT.md`. Erros que já custaram caro: `LESSONS.md`. Decisões: `decisions/`. Não contrarie uma decisão sem escrever a que a substitui.
 
+## Usar não é implementar
+
+Se a pessoa pede para usar o radar (onboarding, triagem, currículo, entrevista, acompanhamento), siga a skill correspondente na tabela de `AGENTS.md`, sem alterar código. Primeiro uso: `npm run setup`.
+
 ## Princípio de produto
 
 O radar ranqueia e orienta; quem decide e quem envia é sempre a pessoa.

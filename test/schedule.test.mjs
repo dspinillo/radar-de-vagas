@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, readFile, rm, readdir, realpath } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { buildPlist, buildTaskXml, schedule } from '../src/schedule.mjs';
+import { buildPlist, buildSystemdUnits, buildTaskXml, schedule } from '../src/schedule.mjs';
 import { scheduledRun } from '../src/scheduled-run.mjs';
 import { main } from '../bin/radar.mjs';
 
@@ -106,7 +106,7 @@ test('falhas de permissão não viram status desligado nem apagam arquivos', asy
   await assert.rejects(schedule('off', options), /permissões/);
   assert.equal(await readFile(file, 'utf8'), before);
   await assert.rejects(schedule('status', { ...options, platform: 'win32' }), /permissões/);
-  await assert.rejects(schedule('on', { ...options, platform: 'linux' }), /somente no Mac e no Windows/);
+  await assert.rejects(schedule('on', { ...options, platform: 'freebsd' }), /use o modo manual/);
 });
 
 test('execução agendada coleta antes da triagem e grava log na pasta temporária, inclusive falhas', async t => {
@@ -155,4 +155,66 @@ test('falha ao registrar remove definição; Windows desabilitado aparece deslig
   };
   assert.deepEqual(await schedule('status', windows.options), { enabled: false, nextRun: null });
   assert.deepEqual(await schedule('off', windows.options), { enabled: false, nextRun: null });
+});
+
+test('unidades systemd puras: intervalo, primeira rodada ao ligar e argumentos escapados', async t => {
+  const { options } = await setup(t, 'linux');
+  const config = { ...options, repoDir: '/opt/repo com "aspas" 100% $HOME', dataEnv: options.dataDir };
+  const { service, timer } = buildSystemdUnits(config);
+  assert.deepEqual(buildSystemdUnits(config), { service, timer });
+  assert.match(timer, /OnActiveSec=1min\nOnBootSec=5min\nOnUnitActiveSec=6h\n/);
+  assert.match(timer, /WantedBy=timers.target/);
+  assert.match(service, /Type=oneshot/);
+  assert.ok(service.includes('repo com \\"aspas\\" 100%% $$HOME/src/scheduled-run.mjs"'));
+  assert.ok(service.includes('WorkingDirectory=/opt/repo com "aspas" 100%% $HOME\n'));
+  assert.match(service, /"--path" "\/bin:\/opt\/agent\/bin" "--data-env" "/);
+  assert.ok(!service.includes('/bin/sh'));
+});
+
+test('schedule linux: status, on, troca de intervalo e off idempotente sem systemd real', async t => {
+  const { options } = await setup(t, 'linux');
+  const calls = [];
+  let enabled = false;
+  const config = { ...options, env: {}, run: async (command, args) => {
+    calls.push([command, args]);
+    if (args[1] === 'is-enabled' && !enabled) {
+      throw Object.assign(new Error('Ausente.'), { code: 4, stdout: 'not-found\n', stderr: '' });
+    }
+    if (args[1] === 'enable') enabled = true;
+    if (args[1] === 'disable') enabled = false;
+    return { stdout: 'enabled\n' };
+  } };
+  const stdout = [];
+  const run = args => main(args, { ...config, stdout: text => stdout.push(text), stderr: () => {} });
+  const unitDir = join(options.homeDir, '.config', 'systemd', 'user');
+  assert.equal(await run(['schedule', 'status']), 0);
+  assert.match(stdout.pop(), /desligado/);
+  assert.equal(await run(['schedule', 'on']), 0);
+  assert.match(stdout.pop(), /ligado/);
+  assert.deepEqual((await readdir(unitDir)).sort(), ['radar-de-vagas.service', 'radar-de-vagas.timer']);
+  assert.match(await readFile(join(unitDir, 'radar-de-vagas.timer'), 'utf8'), /OnUnitActiveSec=6h/);
+  assert.equal(await run(['schedule', 'on', '--hours', '2']), 0);
+  assert.match(await readFile(join(unitDir, 'radar-de-vagas.timer'), 'utf8'), /OnUnitActiveSec=2h/);
+  assert.equal(await run(['schedule', 'off']), 0);
+  assert.match(stdout.pop(), /desligado/);
+  assert.deepEqual(await readdir(unitDir), []);
+  assert.equal(await run(['schedule', 'off']), 0);
+  assert.ok(calls.every(([command, args]) => command === 'systemctl' && args[0] === '--user'));
+  assert.ok(calls.some(([, args]) => args[1] === 'enable' && args[2] === '--now' && args[3] === 'radar-de-vagas.timer'));
+  assert.ok(calls.some(([, args]) => args[1] === 'daemon-reload'));
+});
+
+test('linux sem systemd de usuário explica o modo manual e não deixa unidades', async t => {
+  const { options } = await setup(t, 'linux');
+  const config = { ...options, env: {}, run: async () => {
+    throw Object.assign(new Error('Sem barramento.'), { code: 1, stderr: 'Failed to connect to bus: No medium found' });
+  } };
+  await assert.rejects(schedule('status', config), /modo manual/);
+  config.run = async (_, args) => {
+    if (args[1] === 'is-enabled') throw Object.assign(new Error('Ausente.'), { code: 1, stderr: 'Failed to get unit file state: No such file or directory' });
+    if (args[1] === 'enable') throw new Error('Falha fictícia ao registrar.');
+    return { stdout: '' };
+  };
+  await assert.rejects(schedule('on', config), /modo manual/);
+  assert.deepEqual(await readdir(join(options.homeDir, '.config', 'systemd', 'user')), []);
 });

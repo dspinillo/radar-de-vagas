@@ -8,6 +8,7 @@
   },
   "license": "MIT",
   "scripts": {
+    "setup": "node bin/radar.mjs setup",
     "open": "node bin/radar.mjs open",
     "collect": "node bin/radar.mjs collect",
     "test": "node --test",

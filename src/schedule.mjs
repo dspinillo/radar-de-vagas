@@ -9,6 +9,7 @@ import { repositoryDir } from './triage-run.mjs';
 
 const label = 'com.radar-de-vagas.collect';
 const taskName = 'Radar de Vagas';
+const unitName = 'radar-de-vagas';
 const xml = value => String(value).replace(/[&<>"']/g, char => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;',
 })[char]);
@@ -42,7 +43,20 @@ export function buildTaskXml({ nodePath, repoDir, dataDir, hours, startAt, path 
 </Task>\n`;
 }
 
-async function resolveExecutable(command, path, platform) {
+// Aspas, barra, especificador (%) e variável ($) seguem as regras de ExecStart do systemd.
+const quoteSystemd = value => `"${String(value).replace(/[\\"]/g, '\\$&').replace(/%/g, '%%').replace(/\$/g, '$$$$')}"`;
+
+export function buildSystemdUnits({ nodePath, repoDir, dataDir, hours, path = '', dataEnv }) {
+  // Como no Windows, o executor recebe PATH e pasta de dados por argumento.
+  const args = [nodePath, join(repoDir, 'src', 'scheduled-run.mjs'), dataDir, '--path', path,
+    ...(dataEnv === undefined ? [] : ['--data-env', dataEnv])].map(quoteSystemd).join(' ');
+  return {
+    service: `[Unit]\nDescription=Radar de Vagas: coleta e triagem\n\n[Service]\nType=oneshot\nWorkingDirectory=${String(repoDir).replace(/%/g, '%%')}\nExecStart=${args}\n`,
+    timer: `[Unit]\nDescription=Radar de Vagas a cada ${hours} h\n\n[Timer]\nOnActiveSec=1min\nOnBootSec=5min\nOnUnitActiveSec=${hours}h\n\n[Install]\nWantedBy=timers.target\n`,
+  };
+}
+
+export async function resolveExecutable(command, path, platform) {
   const candidates = isAbsolute(command) ? [command] : path.split(platform === 'win32' ? ';' : ':')
     .filter(Boolean).flatMap(directory => (platform === 'win32' ? ['', '.exe', '.com'] : [''])
       .map(extension => resolve(directory, command + extension)));
@@ -60,7 +74,9 @@ export async function schedule(action, { platform = process.platform, homeDir = 
   dataDir = resolveDataDir(env), repoDir = repositoryDir, nodePath = process.execPath,
   path = env.PATH ?? '', hours = 6, now = new Date(), uid = process.getuid?.(),
   run = promisify(execFile) } = {}) {
-  if (!['darwin', 'win32'].includes(platform)) throw new Error('Agendamento disponível somente no Mac e no Windows.');
+  if (!['darwin', 'win32', 'linux'].includes(platform)) {
+    throw new Error('Agendamento disponível no Mac, no Windows e no Linux com systemd. Neste sistema, use o modo manual.');
+  }
   const directory = await ensureDataDir(dataDir);
   let config;
   if (action === 'on') {
@@ -76,7 +92,22 @@ export async function schedule(action, { platform = process.platform, homeDir = 
   const plist = join(homeDir, 'Library', 'LaunchAgents', `${label}.plist`);
   const task = join(directory, 'agendamento.xml');
   const target = `gui/${uid}/${label}`;
-  const query = async () => {
+  const unitDir = join(env.XDG_CONFIG_HOME || join(homeDir, '.config'), 'systemd', 'user');
+  const units = ['service', 'timer'].map(kind => join(unitDir, `${unitName}.${kind}`));
+  const systemctl = args => run('systemctl', ['--user', ...args]);
+  const query = platform !== 'linux' ? null : async () => {
+    try {
+      await systemctl(['is-enabled', `${unitName}.timer`]);
+      return { exists: true, enabled: true };
+    } catch (error) {
+      // is-enabled sai com erro e escreve o estado; unidade ausente varia conforme a versão do systemd.
+      const output = `${error.stdout ?? ''}\n${error.stderr ?? ''}`;
+      if (error.code !== 'ENOENT' && /not-found|no such file|does not exist/i.test(output)) return { exists: false, enabled: false };
+      if (error.code !== 'ENOENT' && /^\s*(disabled|masked|static|indirect|linked)/im.test(output)) return { exists: true, enabled: false };
+      throw new Error('Não foi possível consultar o systemd de usuário. Em WSL ou contêiner sem systemd, use o modo manual.', { cause: error });
+    }
+  };
+  const queryNative = async () => {
     try {
       const { stdout = '' } = platform === 'darwin'
         ? await run('launchctl', ['print', target])
@@ -92,10 +123,11 @@ export async function schedule(action, { platform = process.platform, homeDir = 
       throw new Error('Não foi possível consultar o agendador. Confira as permissões.', { cause: error });
     }
   };
-  let state = await query();
+  let state = await (query ?? queryNative)();
   if (action === 'off' || action === 'on') {
     if (state.exists) {
-      if (platform === 'darwin') await run('launchctl', ['bootout', target]);
+      if (platform === 'linux') await systemctl(['disable', '--now', `${unitName}.timer`]);
+      else if (platform === 'darwin') await run('launchctl', ['bootout', target]);
       else {
         try { await run('schtasks', ['/End', '/TN', taskName]); }
         catch (error) {
@@ -106,10 +138,26 @@ export async function schedule(action, { platform = process.platform, homeDir = 
     }
     if (platform === 'darwin') await rm(plist, { force: true });
     await rm(task, { force: true });
+    if (platform === 'linux') {
+      for (const unit of units) await rm(unit, { force: true });
+      if (state.exists) await systemctl(['daemon-reload']);
+    }
     state = { exists: false, enabled: false };
   }
   if (action === 'on') {
-    if (platform === 'darwin') {
+    if (platform === 'linux') {
+      const content = buildSystemdUnits(config);
+      await mkdir(unitDir, { recursive: true });
+      await writeFile(units[0], content.service, { mode: 0o600 });
+      await writeFile(units[1], content.timer, { mode: 0o600 });
+      try {
+        await systemctl(['daemon-reload']);
+        await systemctl(['enable', '--now', `${unitName}.timer`]);
+      } catch (error) {
+        for (const unit of units) await rm(unit, { force: true });
+        throw new Error('Não foi possível ligar o agendamento no systemd de usuário. Em WSL ou contêiner sem systemd, use o modo manual.', { cause: error });
+      }
+    } else if (platform === 'darwin') {
       await mkdir(join(homeDir, 'Library', 'LaunchAgents'), { recursive: true });
       await writeFile(plist, buildPlist(config), { mode: 0o600 });
       try { await run('launchctl', ['bootstrap', `gui/${uid}`, plist]); }

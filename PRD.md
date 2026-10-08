@@ -17,7 +17,7 @@ Um radar pessoal de vagas que roda na máquina de quem procura emprego. Um agent
 
 ## 3. Usuário-alvo
 
-Quem está procurando emprego no Brasil e já usa Claude Code ou Codex. Sabe clonar um repositório e rodar um comando. Usa Mac ou Windows.
+Quem está procurando emprego no Brasil e já usa Claude Code ou Codex. Sabe clonar um repositório e rodar um comando. Usa Mac, Linux ou Windows.
 
 ## 4. Job-to-be-done
 
@@ -40,7 +40,7 @@ Nada ainda.
 | Triagem | Estrelas de 1 a 5, motivo e alertas por vaga | F2 |
 | Radar | Página local em tabela, com inscrevi e descartar com motivo | F1 |
 | Memória | Motivos de descarte viram pontos de atenção nas próximas vagas | F3 |
-| Agendamento | Rodar em intervalo definido pela pessoa, em Mac e Windows, ou só manualmente | F4 |
+| Agendamento | Rodar em intervalo definido pela pessoa, em Mac, Windows e Linux, ou só manualmente | F4 |
 | Acompanhamento | Depois do inscrevi: status do processo, próximo passo e observações por candidatura | F5 |
 | Currículo por vaga | Versão do currículo ajustada à vaga, montada a partir das entregas do perfil, com o que mudou em relação ao currículo base | F5 |
 | Munição de entrevista | Página única por entrevista: por que você encaixa, casos que respondem a cada requisito, lacunas e como tratá-las, perguntas a fazer e faixa salarial | F5 |

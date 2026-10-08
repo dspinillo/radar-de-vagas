@@ -296,6 +296,6 @@ test('documentação copiada para pasta temporária usa marketplace ./ e fecha v
   assert.doesNotMatch(readme, /^claude plugin marketplace add \.$/m);
   assert.equal(JSON.parse(await readFile(join(root, 'package.json'), 'utf8')).version, '0.1.0');
   const changelog = await readFile(join(root, 'CHANGELOG.md'), 'utf8');
-  assert.match(changelog, /## \[Não lançado\]\s+## \[0\.1\.0\] - 2026-10-02/);
+  assert.match(changelog, /## \[Não lançado\][\s\S]*?## \[0\.1\.0\] - 2026-10-02/);
   assert.ok(!(await readFile(join(root, 'CONTEXT.md'), 'utf8')).includes('`web/`'));
 });

@@ -35,7 +35,7 @@ O julgamento ficou em skills de markdown (`skills/`); o código são comandos fi
 |---|---|---|---|
 | F2 | 🟡 | Skills de onboarding e triagem; comandos `paths`, `pending`, `show`, `triage`; página com estrelas, motivo e alertas. Triagem validada com agente real e perfil fictício. | Onboarding com pessoa real; calibrar a triagem com perfil e vagas reais. |
 | F3 | 🟡 | Comando `discards` e memória de descarte na skill de triagem. Em rodada real, um descarte virou alerta em vaga parecida, sem cortar. | Observar o aprendizado ao longo de várias rodadas. |
-| F4 | 🟡 | `schedule on`, `off` e `status`. Validado de verdade no Mac (launchd). | Validar no Windows (Agendador de Tarefas). |
+| F4 | 🟡 | `schedule on`, `off` e `status`. Validado de verdade no Mac (launchd). Linux por timer do systemd de usuário, só com testes automáticos. | Validar no Windows (Agendador de Tarefas) e no Linux em máquina real. |
 | F5 | 🟡 | Skills de currículo por vaga, entrevista e acompanhamento; comando `track`; etapa e próximo passo na página. Os dois documentos foram gerados com agente real e nada saiu de fora do perfil. | Conferir a impressão em PDF; uso com perfil real. |
 | F6 | 🟡 | Versão 0.1.0, README com instalação do plugin e fluxo de uso. | Alguém de fora instalar em menos de dez minutos; vídeo de demonstração. |
 

@@ -4,7 +4,7 @@
 >
 > **Tipo:** misto (plugin de agente, scripts e página local) · **Nível:** N3 · **Stack:** Node 20+ sem dependências · **Licença:** MIT
 
-**Versão 0.1.0.** Coleta, radar local, cinco skills, triagem, acompanhamento e agendamento implementados. Validação nativa do agendamento em Mac e Windows permanece pendente.
+**Versão 0.1.0.** Coleta, radar local, cinco skills, triagem, acompanhamento e agendamento implementados. Para instalar, vá direto ao [Começo rápido](#começo-rápido).
 
 ## Visão
 
@@ -16,7 +16,7 @@ O que ele **não** é: não se candidata por você, não esconde vaga por conta 
 
 ## Como funciona
 
-1. Você clona o repositório e abre no Claude Code ou no Codex.
+1. Você clona o repositório, roda `npm run setup` e abre no Claude Code ou no Codex.
 2. O agente faz a entrevista e grava seu perfil em `~/.radar-de-vagas/`.
 3. A coleta roda quando você pedir ou no horário que você agendar (por exemplo, a cada seis horas).
 4. A página do radar abre no navegador com as vagas novas, as estrelas e os alertas.
@@ -39,179 +39,112 @@ radar-de-vagas/
 ├── CONTEXT.md        # vocabulário do projeto
 ├── LESSONS.md        # o que aprendemos na marra
 ├── CLAUDE.md         # instruções para agentes (AGENTS.md aponta para cá)
-└── decisions/        # decisões com o porquê
+├── decisions/        # decisões com o porquê
+├── docs/             # referência de uso e contratos internos
+└── skills/           # o julgamento do produto, em texto
 ```
 
-## Como rodar
+## Começo rápido
 
-Pré-requisitos: **Node.js 20 ou superior**, com npm, e Git instalados. Não há dependências para instalar. Use o Terminal no Mac ou o PowerShell no Windows.
+Você precisa de **Node.js 20 ou superior** e **Git**. Funciona em Mac, Linux e Windows, e não há dependências para instalar. Para ter estrelas, alertas e entrevista de onboarding, tenha também o Claude Code ou o Codex instalado e com login feito.
 
-### Instalar e preparar a busca
-
-Nos dois sistemas, confira a versão do Node, clone e entre na pasta:
+**1. Baixe e prepare.** No terminal (Terminal no Mac e no Linux, PowerShell no Windows):
 
 ```sh
-node --version
 git clone https://github.com/dspinillo/radar-de-vagas.git
 cd radar-de-vagas
-node --input-type=module -e "import { initializeDataDir } from './src/data-dir.mjs'; await initializeDataDir();"
+npm run setup
 ```
 
-A última linha cria `busca.json` com exemplos fictícios. Abra o arquivo para editar:
+O `setup` confere o Node, cria sua pasta de dados fora do clone, procura o Claude Code e o Codex na máquina e termina dizendo o próximo passo. Pode rodar de novo sempre que tiver dúvida de onde parou.
 
-Mac:
+**2. Faça o onboarding.** Ainda na pasta do clone, abra o agente (`claude` ou `codex`) e peça:
 
-```sh
-nano "${RADAR_DATA_DIR:-$HOME/.radar-de-vagas}/busca.json"
+```text
+Faça meu onboarding do Radar de Vagas seguindo skills/onboarding/SKILL.md
 ```
 
-No nano, salve com Ctrl+O, Enter e saia com Ctrl+X.
+É uma entrevista, uma pergunta por vez: seu LinkedIn, seu currículo, suas entregas, onde e como quer trabalhar, faixa salarial e o que procurar. No fim o agente grava seu perfil e sua busca e pergunta se você quer agendar a coleta. Você não edita nenhum arquivo.
 
-Windows (PowerShell):
-
-```powershell
-$dataDir = if ($env:RADAR_DATA_DIR) { $env:RADAR_DATA_DIR } else { Join-Path $HOME '.radar-de-vagas' }
-notepad (Join-Path $dataDir 'busca.json')
-```
-
-Substitua `termos` pelo que procura. Ajuste `localidade`, `modelo` (`remoto`, `híbrido` ou `presencial`) e `idadeMaximaDias`; `null` deixa a preferência em aberto. Em `empresas`, troque os identificadores fictícios pelos identificadores das páginas de carreiras de cada fonte, ou use `[]` para não consultar aquele portal. Remova o campo `aviso` quando terminar. Salve como JSON, mantendo aspas duplas e sem vírgula após o último item.
-
-Os campos opcionais `detalhesNovosPorFonte` (padrão **150**) e
-`prazoFonteSegundos` (padrão **600**, dez minutos) aceitam inteiros positivos e
-valem para cada fonte em cada rodada. O primeiro limita candidatos novos, somando
-termos e empresas; o segundo limita a execução inteira da fonte. Exemplo:
-
-```json
-"detalhesNovosPorFonte": 150,
-"prazoFonteSegundos": 600
-```
-
-A idade é aplicada na listagem antes dos detalhes; publicação desconhecida nunca
-exclui a vaga. Não há corte local por título ou modelo. Até quatro detalhes são
-processados em paralelo por fonte, mantendo o LinkedIn em série. Um aviso informa
-quantas vagas ficaram para a próxima rodada por causa do teto; elas continuam
-pendentes e serão tentadas nas próximas coletas. Um prazo excedido registra erro
-e permite seguir para a próxima fonte.
-
-LinkedIn vem desligado. Para ligar, mude `fontes.linkedin` para `true`. É raspagem de páginas públicas, sem login: pode sofrer bloqueios e mudanças no portal. O coletor espera entre chamadas e interrompe a fonte se encontrar uma barreira de acesso. Para desligar, volte para `false`.
-
-### Primeira coleta e página
-
-Depois de salvar a busca, rode nos dois sistemas:
+**3. Colete, julgue e veja.**
 
 ```sh
 npm run collect
+```
+
+Depois, no agente, peça `Faça a triagem`. Ele lê cada vaga inteira e grava estrelas, motivo e alertas. Para ver o resultado no navegador:
+
+```sh
 npm run open
 ```
 
-São equivalentes a `node bin/radar.mjs collect` e `node bin/radar.mjs open`. A coleta mostra início, páginas, detalhes N de M, conclusão, contagens e avisos por fonte; avisos precisam ser conferidos mesmo se o comando terminar normalmente. O estado é salvo ao concluir cada fonte. **Ctrl+C** durante a coleta preserva as fontes concluídas e aguarda a limpeza de trava e temporários. Vagas reencontradas atualizam a última observação sem buscar detalhes novamente. `open` imprime o endereço local e abre o navegador padrão. Deixe o terminal aberto enquanto usa a página; **Ctrl+C** encerra o servidor. Se o navegador não abrir, copie o endereço impresso.
+Na página, **inscrevi** registra que você enviou a candidatura e **descartar** pede o motivo. O motivo vira memória: a próxima vaga parecida chega avisada. Deixe o terminal aberto enquanto usa a página; **Ctrl+C** encerra.
 
-Na tabela, **inscrevi** registra que você já enviou a candidatura. **Descartar** pede um motivo e salva a decisão. As marcações sobrevivem a fechar a página, reabrir e coletar novamente. O radar não envia candidaturas. Após outra coleta, use **Atualizar vagas** na página.
+A partir daí o ciclo é o mesmo: coletar, triar, abrir. Se você ligou o agendamento no onboarding, a coleta e a triagem rodam sozinhas.
 
-### Dados e testes
+### Sem terminal, pelo app de desktop
 
-`busca.json` e `estado.json` ficam em `.radar-de-vagas` na pasta pessoal, fora do clone. A variável opcional `RADAR_DATA_DIR` escolhe outra pasta absoluta, também fora do repositório. Para testar sem usar seus dados, antes dos comandos acima:
+Se você prefere não digitar comandos, dá para fazer tudo conversando com o agente no app de desktop: a aba **Code** do app do Claude ou o app do **Codex**. O chat comum do Claude e do ChatGPT não serve, porque não roda nada na sua máquina.
 
-Mac:
+O Node.js 20 e o Git continuam precisando estar instalados. Depois disso:
 
-```sh
-export RADAR_DATA_DIR="$(mktemp -d)"
+1. Abra o app e peça para ele trabalhar numa pasta sua (por exemplo, Documentos).
+2. Peça:
+
+```text
+Clone https://github.com/dspinillo/radar-de-vagas, entre na pasta, rode npm run setup e faça meu onboarding seguindo skills/onboarding/SKILL.md
 ```
 
-Windows (PowerShell):
+3. Nas vezes seguintes, abra a pasta `radar-de-vagas` no app e peça `Colete as vagas, faça a triagem e abra a página do radar`.
 
-```powershell
-$env:RADAR_DATA_DIR = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid().ToString())
-```
+O agente roda os mesmos comandos do Começo rápido por você e pede sua aprovação antes de executar. Se o `setup` avisar que não encontrou o Claude Code ou o Codex, pode ignorar: ele procura a versão de terminal, e você já está dentro do agente. Para a triagem agendada rodar sozinha, a versão de terminal do agente precisa estar instalada; sem ela, a agenda só coleta e você pede a triagem pelo app.
 
-Dentro da pasta clonada, rode os testes sem rede:
+Este caminho ainda não foi validado de ponta a ponta. Se você testar, abra uma issue contando como foi.
 
-```sh
-node --test
-```
+### Sem agente
 
-Validação: passo a passo do Mac conferido em cópia limpa com pasta de dados temporária. **Windows ainda não validado em máquina real.**
+Dá para usar só com Node. Você vê as vagas numa tabela, sem estrelas nem alertas. O `npm run setup` mostra o caminho do arquivo `busca.json`; abra num editor de texto, troque os `termos` e as empresas de exemplo pelo que procura, apague o campo `aviso` e rode `npm run collect` e `npm run open`. Os campos estão explicados em [docs/referencia.md](docs/referencia.md).
+
+### Se algo der errado
+
+| Sintoma | O que fazer |
+|---|---|
+| `npm run setup` reclama da versão | Atualize o Node para a 20 ou superior em [nodejs.org](https://nodejs.org). |
+| `setup` não encontra o agente | Instale o Claude Code ou o Codex, abra um terminal novo e rode `npm run setup` de novo. |
+| A coleta termina com avisos | Leia os avisos: empresa de exemplo que não existe e fonte fora do ar aparecem ali. As outras fontes seguem valendo. |
+| O navegador não abre | Copie o endereço que `npm run open` imprime e cole no navegador. |
+| `busca.json` inválido | O `setup` e a coleta dizem qual campo está errado. O arquivo nunca é apagado. |
+| Agendamento falha no Linux | Ele usa o systemd de usuário. Em WSL ou contêiner sem systemd, fique no modo manual. |
+
+### O que foi validado
+
+Passo a passo conferido no Mac em cópia limpa, com agendamento real. **Linux e Windows passam nos testes automáticos, mas o agendamento ainda não foi validado em máquina real nesses dois sistemas.** O caminho pelo app de desktop (aba Code do Claude e app do Codex) também não foi validado. Se você testar, abra uma issue contando.
 
 ## Privacidade
 
 Este repositório não contém dado pessoal de ninguém e não pode conter. Os exemplos são fictícios. Antes de contribuir, leia a seção de privacidade em `CLAUDE.md`.
 
-## Skills no Claude Code e no Codex
+## Skills
 
-As skills de onboarding, triagem com memória, currículo por vaga, entrevista e
-acompanhamento estão em `skills/`. O julgamento do produto vive nesses arquivos.
-Os exemplos em `examples/perfil.md` e `examples/regua.md` são inteiramente fictícios.
-Os comandos das fases F2 a F5 precisam estar disponíveis na versão usada do clone.
+O julgamento do produto vive em cinco arquivos de `skills/`, lidos pelo Claude Code e pelo Codex: onboarding, triagem com memória, currículo por vaga, entrevista e acompanhamento. Basta pedir em português, na pasta do clone:
 
-### Instalar como plugin do Claude Code
+| Você pede | O agente faz |
+|---|---|
+| `Faça meu onboarding do Radar de Vagas seguindo skills/onboarding/SKILL.md` | Entrevista, perfil, busca e revisão do currículo e do LinkedIn |
+| `Faça a triagem` | Estrelas, motivo e alertas nas vagas novas |
+| `Monte o currículo para a vaga <ID>` | Currículo ajustado à vaga, só com fatos do seu perfil |
+| `Vou ter entrevista na vaga <ID>` | Página única de preparo |
+| `Tive novidade na vaga <ID>` | Atualiza etapa e próximo passo |
 
-Com Claude Code instalado e autenticado, execute na raiz deste clone:
+O ID aparece na linha da vaga na página, com botão **Copiar ID**.
+
+No Claude Code, quem preferir comandos com barra pode instalar o plugin (opcional):
 
 ```sh
 claude plugin marketplace add ./
 claude plugin install radar-de-vagas@radar-de-vagas-local
-claude
 ```
 
-Na sessão aberta, use `/radar-de-vagas:onboarding`. As demais skills têm o mesmo
-prefixo: `triagem`, `curriculo-por-vaga`, `entrevista` e `acompanhamento`.
-Continue trabalhando na raiz do clone para os comandos encontrarem `bin/radar.mjs`.
-O catálogo local em `.claude-plugin/marketplace.json` permite essa instalação.
-Veja a [documentação oficial de marketplaces do Claude Code](https://code.claude.com/docs/en/plugin-marketplaces).
+Com ele, as skills viram `/radar-de-vagas:onboarding`, `/radar-de-vagas:triagem` e assim por diante.
 
-Para carregar diretamente os arquivos do clone durante uma sessão, também pode usar
-`claude --plugin-dir .` e os mesmos nomes de skills, conforme a
-[documentação oficial de plugins](https://code.claude.com/docs/en/plugins).
-**Instalação e uso no Windows não validados.**
-
-### Usar no Codex
-
-Abra este clone como projeto no Codex e peça: "Faça meu onboarding do Radar de Vagas
-seguindo skills/onboarding/SKILL.md". O `AGENTS.md` aponta para as mesmas cinco skills.
-Para as próximas tarefas, peça "Faça a triagem" ou "Monte o currículo para a vaga
-de ID informado", usando o ID real exibido pelo radar. Não precisa duplicar skills.
-Esse encaminhamento usa [instruções de projeto em AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md).
-**Uso e agendamento no Windows não validados.**
-
-### Fluxo de uso em cinco passos
-
-1. **Onboarding.** Responda uma pergunta por vez sobre repertório e preferências.
-   O agente grava perfil e busca fora do clone e revisa currículo e LinkedIn.
-   Você escolhe LinkedIn, teto de triagem, agente e agenda com os riscos explicados.
-2. **Coleta.** Rode `node bin/radar.mjs collect`. A coleta funciona sem agente.
-   Confira os avisos das fontes e substitua empresas fictícias antes de acompanhar empresas.
-3. **Triagem.** Peça a skill de triagem ao agente. Ela lê cada descrição inteira,
-   grava estrelas, motivo e alertas e atualiza a régua com os motivos dos descartes.
-   O teto padrão é 30 vagas por rodada; as demais ficam na fila, sem descarte automático.
-   Com `agente` configurado como `claude` ou `codex` em `busca.json`, também pode usar
-   `node bin/radar.mjs triage-run`. Sem esse campo, o comando só explica como ligar.
-4. **Página.** Rode `node bin/radar.mjs open` para comparar vagas no navegador.
-   Quem decide é você. Descartar exige seu motivo; a memória avisa em vagas parecidas.
-5. **Candidatura e entrevista.** Peça o currículo pelo ID, revise o HTML e salve como
-   PDF pelo navegador. Envie a candidatura por conta própria e marque **inscrevi** na página.
-   Conte novidades ao agente para atualizar etapa e próximo passo. Quando tiver entrevista,
-   informe o ID para registrar a conversa e receber a página única de preparo.
-   Currículo e munição usam somente fatos do perfil; lacunas viram perguntas.
-
-O onboarding pode ligar `node bin/radar.mjs schedule on --hours 6`, que agenda coleta
-seguida de `triage-run`. Para conferir, use `node bin/radar.mjs schedule status`;
-para voltar ao modo manual, `node bin/radar.mjs schedule off`.
-Máquina desligada não executa a agenda. O agente precisa estar instalado e autenticado;
-cada julgamento consome sua assinatura ou cota. **Agendamento no Windows não validado.**
-
-`node bin/radar.mjs paths` informa os caminhos de perfil, busca, régua, currículos e
-entrevistas. Esses documentos são escritos nesses caminhos, pois não há comandos de
-edição de documentos no contrato. O estado das vagas é acessado apenas pelos comandos;
-nenhuma skill edita `estado.json`. `track` atualiza acompanhamento, sem marcar inscrevi
-ou descartar, ações que continuam na página. Campos omitidos são preservados atomicamente;
-`--clear-next` limpa o próximo passo e `--clear-notes` limpa as notas. Não combine uma
-opção de limpeza com o texto do mesmo campo. Valores iniciados por `--` são aceitos
-como argumento literal ou com `=`, por exemplo `--reason="--home office"`.
-O ID permanece visível na linha da vaga, com botão **Copiar ID**, inclusive após inscrevi.
-
-Ao ligar a agenda, o radar valida Node e o agente configurado, guarda um PATH com
-as pastas dos executáveis e preserva `RADAR_DATA_DIR` quando definida. Uma rodada
-ainda ativa faz a próxima sair sem coletar nem triar, registrando o motivo no log.
-Travas de processos encerrados são recuperadas; uma trava sem PID válido só é
-recuperada após 30 segundos. `agendamento.log` é reduzido à parte final de cerca
-de 256 KiB quando ultrapassa 1 MiB, sem criar arquivos de rotação.
+Agendamento, campos do `busca.json`, comandos e pasta de dados estão em [docs/referencia.md](docs/referencia.md).

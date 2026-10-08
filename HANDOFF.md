@@ -1,6 +1,6 @@
 # Radar de Vagas · Handoff
 
-> Como retomar este projeto amanhã (pessoa ou IA). Atualizado em **2026-10-02** · branch `main`
+> Como retomar este projeto amanhã (pessoa ou IA). Atualizado em **2026-10-06** · branch `main`
 
 ## Objetivo acordado
 
@@ -13,6 +13,7 @@ Dir:      onde o repositório foi clonado
 Dados:    ~/.radar-de-vagas/ (fora do repositório; RADAR_DATA_DIR troca a pasta, use em teste)
 Branch:   main
 Hook:     git config core.hooksPath .githooks (uma vez por clone)
+Preparo:  npm run setup (confere a máquina e diz o próximo passo)
 Testes:   node --test
 Guarda:   node scripts/check-privacy.mjs
 Coleta:   node bin/radar.mjs collect
@@ -30,7 +31,7 @@ Smoke:    node scripts/smoke-sources.mjs (termos e empresas reais só por argume
 
 1. [ ] Mantenedor: instalar o plugin, rodar o onboarding com o próprio perfil, `collect`, triagem, e anotar onde a triagem errou.
 2. [ ] Ajustar `skills/triagem/SKILL.md` com o que o uso real mostrar.
-3. [ ] Validar README, agendamento e página no Windows.
+3. [ ] Validar README, agendamento e página no Windows; validar `schedule on` no Linux em máquina real (timer do systemd de usuário).
 4. [ ] Lançamento: alguém de fora instala seguindo só o README; vídeo de demonstração.
 
 ## Como validar de verdade

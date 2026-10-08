@@ -4,6 +4,19 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## [Não lançado]
 
+### Adicionado
+
+- **Comando `setup`.** `npm run setup` (ou `node bin/radar.mjs setup`) confere Node 20+, cria a pasta de dados com a busca de exemplo, procura Claude Code e Codex no PATH, informa se o agendamento existe no sistema e imprime o próximo passo conforme o que encontrou (onboarding no agente, caminho manual sem agente, ou coletar quando perfil e busca já existem). Pode ser repetido; não altera arquivo existente. Substitui a linha de `node --input-type=module -e` do README.
+- **Agendamento no Linux.** `schedule on/off/status` usa timer do systemd de usuário (`radar-de-vagas.timer` e `.service` na pasta de configuração do usuário), com primeira rodada um minuto depois de ligar e repetição pelo intervalo escolhido. Sem systemd de usuário (WSL, contêiner) o comando explica que só o modo manual está disponível e não deixa unidades para trás. Coberto por testes com `systemctl` injetado; **não validado em máquina Linux real**.
+
+### Alterado
+
+- **README reescrito em torno de um Começo rápido.** Três passos: `npm run setup`, onboarding no agente, coletar e abrir. O caminho de editar `busca.json` na mão virou seção secundária, a instalação do plugin virou opcional e entrou uma tabela de problemas comuns. Linux passa a constar como sistema suportado.
+- **README: caminho sem terminal.** Seção nova explicando o uso pela aba Code do app do Claude e pelo app do Codex, com o pedido pronto para colar. Deixa claro que o chat comum não serve, que Node e Git continuam necessários e que o caminho **não foi validado de ponta a ponta**.
+- **Referência movida para `docs/referencia.md`.** Comandos, campos do `busca.json`, detalhes de coleta, agendamento por sistema e pasta de dados.
+- **Skill de onboarding.** Começa por `setup`, não oferece agenda onde ela não existe, não insiste se `schedule on` falhar e termina com os próximos passos exatos.
+- **`CLAUDE.md`.** Pedido de uso segue a skill da tabela de `AGENTS.md`, sem mexer em código.
+
 ## [0.1.0] - 2026-10-02
 
 ### Adicionado
