@@ -9,6 +9,11 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 - **Comando `setup`.** `npm run setup` (ou `node bin/radar.mjs setup`) confere Node 20+, cria a pasta de dados com a busca de exemplo, procura Claude Code e Codex no PATH, informa se o agendamento existe no sistema e imprime o próximo passo conforme o que encontrou (onboarding no agente, caminho manual sem agente, ou coletar quando perfil e busca já existem). Pode ser repetido; não altera arquivo existente. Substitui a linha de `node --input-type=module -e` do README.
 - **Agendamento no Linux.** `schedule on/off/status` usa timer do systemd de usuário (`radar-de-vagas.timer` e `.service` na pasta de configuração do usuário), com primeira rodada um minuto depois de ligar e repetição pelo intervalo escolhido. Sem systemd de usuário (WSL, contêiner) o comando explica que só o modo manual está disponível e não deixa unidades para trás. Coberto por testes com `systemctl` injetado; **não validado em máquina Linux real**.
 
+### Corrigido
+
+- **LinkedIn não desiste mais no primeiro 429** ([#1](https://github.com/dspinillo/radar-de-vagas/issues/1)). HTTP 429 é limite de volume, não bloqueio: a fonte espera 5, 15 e 30 segundos (ou o `Retry-After` do LinkedIn, se for maior, com teto de 60 s) e tenta de novo; só depois de três novas tentativas para, com aviso dizendo isso. Login, captcha, redirecionamento, 401, 403 e 999 continuam parando na primeira vez. Validado em coleta real: o 429 apareceu na terceira página e a coleta seguiu.
+- **LinkedIn para de paginar quando o teto de detalhes enche.** Antes a listagem continuava até a página 100 depois do teto de `detalhesNovosPorFonte`, gerando chamadas sem uso e mais chance de 429. Em coleta real com teto de 40, a rodada caiu de 4min40 para 1min05, com as mesmas 40 vagas.
+
 ### Alterado
 
 - **README reescrito em torno de um Começo rápido.** Três passos: `npm run setup`, onboarding no agente, coletar e abrir. O caminho de editar `busca.json` na mão virou seção secundária, a instalação do plugin virou opcional e entrou uma tabela de problemas comuns. Linux passa a constar como sistema suportado.

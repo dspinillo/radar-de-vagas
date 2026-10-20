@@ -1,24 +1,40 @@
 import { createSource, html, text, date, elementByClass } from '../source-utils.mjs';
+// 429 é limite de volume, não bloqueio: espera e tenta de novo antes de desistir da fonte.
+export const RETRY_WAITS = [5000, 15000, 30000];
+const MAX_RETRY_AFTER = 60000;
+const BLOCK_STATUSES = [301, 302, 303, 307, 308, 401, 403, 429, 999];
 async function request(s, url, detail = false) {
   if (s.linkedinCalled) await s.sleep(1000);
   s.linkedinCalled = true;
-  try {
-    const body = await s.request(url, { redirect: 'manual' }, 'text');
-    const publicContent = detail
-      ? html(elementByClass(body, 'show-more-less-html__markup'))
-      : /urn:li:jobPosting:\d+/.test(body);
-    if (!publicContent && /<(?:form|iframe|input|div)\b[^>]*(?:authwall|checkpoint|captcha)|<form[^>]*(?:login|signin)|<title[^>]*>\s*(?:sign in|login|security verification|verification de sécurité)/i.test(body)) {
-      s.stopped = true;
-      throw new Error('LinkedIn sinalizou bloqueio ou pediu autenticação; fonte interrompida.');
+  for (let attempt = 0; ; attempt++) {
+    try { return await attemptRequest(s, url, detail); }
+    catch (error) {
+      if (error.status === 429 && attempt < RETRY_WAITS.length) {
+        const asked = error.retryAfter ? Math.min(error.retryAfter * 1000, MAX_RETRY_AFTER) : 0;
+        const wait = Math.max(RETRY_WAITS[attempt], asked);
+        s.ctx.log?.(`LinkedIn: limite de volume (HTTP 429); nova tentativa em ${Math.round(wait / 1000)} s (${attempt + 1} de ${RETRY_WAITS.length}).`);
+        await s.sleep(wait);
+        continue;
+      }
+      if (BLOCK_STATUSES.includes(error.status)) {
+        s.stopped = true;
+        const persisted = error.status === 429 ? ` depois de ${RETRY_WAITS.length} novas tentativas` : '';
+        throw new Error(`LinkedIn sinalizou bloqueio (HTTP ${error.status})${persisted}; fonte interrompida.`);
+      }
+      throw error;
     }
-    return body;
-  } catch (error) {
-    if ([301, 302, 303, 307, 308, 401, 403, 429, 999].includes(error.status)) {
-      s.stopped = true;
-      throw new Error(`LinkedIn sinalizou bloqueio (HTTP ${error.status}); fonte interrompida.`);
-    }
-    throw error;
   }
+}
+async function attemptRequest(s, url, detail) {
+  const body = await s.request(url, { redirect: 'manual' }, 'text');
+  const publicContent = detail
+    ? html(elementByClass(body, 'show-more-less-html__markup'))
+    : /urn:li:jobPosting:\d+/.test(body);
+  if (!publicContent && /<(?:form|iframe|input|div)\b[^>]*(?:authwall|checkpoint|captcha)|<form[^>]*(?:login|signin)|<title[^>]*>\s*(?:sign in|login|security verification|verification de sécurité)/i.test(body)) {
+    s.stopped = true;
+    throw new Error('LinkedIn sinalizou bloqueio ou pediu autenticação; fonte interrompida.');
+  }
+  return body;
 }
 export const linkedin = createSource({ name: 'linkedin', label: 'LinkedIn', kind: 'search', defaultEnabled: false, async run(s, term) {
   let offset = 0, page = 0;
@@ -51,7 +67,7 @@ export const linkedin = createSource({ name: 'linkedin', label: 'LinkedIn', kind
           description, publishedAt: date(detail.match(/<time\b[^>]*datetime=["']([^"']+)/i)?.[1]) };
       }, publishedAt);
     }
-    if (s.stopped || !s.page(ids, term, ++page)) break;
+    if (s.stopped || s.full() || !s.page(ids, term, ++page)) break;
     offset += ids.length;
   }
 } });

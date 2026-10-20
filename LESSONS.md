@@ -30,6 +30,7 @@
 ## Ambiente / ferramentas
 
 - **LinkedIn sem login.** Responde, mas limita por volume: manter cerca de um segundo entre chamadas.
+- **429 do LinkedIn é passageiro.** Tratar 429 como bloqueio e parar a fonte deixou um usuário real só com a Gupy (issue #1); uma espera de 5 segundos já basta na maioria das vezes. O que mais provoca o 429 é volume desnecessário: listagem que segue paginando depois do teto de detalhes.
 - **Teste sem rede não mostra custo de volume.** A coleta passava em todos os testes e levava minutos em silêncio com a busca de exemplo, porque um termo comum devolve centenas de vagas e cada uma pede uma busca de detalhe. Rodar a coleta real antes de fechar a tarefa.
 - **Quadro de vagas vazio responde 200.** Greenhouse e Lever devolvem lista vazia para empresa sem vaga aberta. Zero vagas não prova que a fonte quebrou nem que o identificador da empresa está errado.
 - **Julgamento vai em skill, não em código.** Onboarding, triagem, currículo e entrevista são instruções em markdown; o código só lê e grava o estado por comandos. As fases F2 a F5 custaram cerca de 400 linhas de código e 240 de skill.

@@ -42,7 +42,13 @@ export function createSource({ name, label, kind, run, defaultEnabled = true }) 
         : error?.message || 'Falha inesperada ao consultar a fonte.' });
     const state = {
       ctx, seen, warn, stopped: false,
-      sleep: ctx.sleep ?? (ms => new Promise(resolve => setTimeout(resolve, ms))),
+      // A espera termina cedo se a coleta for cancelada; a próxima chamada vê o sinal e encerra.
+      sleep: ctx.sleep ?? (ms => new Promise(resolve => {
+        if (ctx.signal?.aborted) return resolve();
+        const done = () => { clearTimeout(timer); ctx.signal?.removeEventListener('abort', done); resolve(); };
+        const timer = setTimeout(done, ms);
+        ctx.signal?.addEventListener('abort', done, { once: true });
+      })),
       async request(url, options, format = 'json') {
         check();
         const response = await fetch(url, { ...options, signal: ctx.signal ?? options?.signal });
@@ -50,6 +56,7 @@ export function createSource({ name, label, kind, run, defaultEnabled = true }) 
         if (!response.ok) {
           const error = new Error(`A fonte respondeu com erro HTTP ${response.status}.`);
           error.status = response.status;
+          error.retryAfter = Number(response.headers?.get?.('retry-after')) || null;
           throw error;
         }
         try { return format === 'text' ? await response.text() : await response.json(); }
@@ -91,6 +98,8 @@ export function createSource({ name, label, kind, run, defaultEnabled = true }) 
         check();
         log(`${label}: página ${pageNumber} (${target}), ${count} vagas na listagem.`);
       },
+      // Fonte por termo pagina sem fim: parar a listagem quando o teto de detalhes enche poupa chamadas.
+      full: () => selected >= limit,
       pages: new Set(),
       page(items, key, pageNumber) {
         const signature = `${key}:${JSON.stringify(items.map(item => item?.id ?? item?.jobId ?? item))}`;

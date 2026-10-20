@@ -1,6 +1,6 @@
 # Radar de Vagas · Status
 
-> Atualize ao final de cada sessão. Última atualização: **2026-10-08** · frente ativa: lançamento da 0.1 · versão 0.1.0
+> Atualize ao final de cada sessão. Última atualização: **2026-10-20** · frente ativa: lançamento da 0.1 · versão 0.1.0
 > Legenda: ✅ feito · 🟡 parcial · ▶️ próximo · ⏸️ aguardando · 🔒 bloqueado · ⬜ não iniciado
 
 ## Estado atual (leia primeiro)
@@ -21,6 +21,16 @@ A versão 0.1.0 está com o código de F1 a F5 entregue: coleta em seis fontes, 
 
 ## Onde paramos (última sessão)
 
+- **Feito nesta sessão (2026-10-20):** correção da issue #1 (usuário só recebia vagas da Gupy). O LinkedIn tratava HTTP 429 como bloqueio e desistia da fonte; agora espera 5, 15 e 30 s (ou `Retry-After`, teto de 60 s) antes de parar. A listagem também para de paginar quando o teto de detalhes enche (antes ia até a página 100). A espera é interrompida se a coleta for cancelada. Suíte: 310 testes passando, guarda limpa.
+- **Validado:** coleta real no LinkedIn com pasta de dados temporária e teto de 40: o 429 apareceu na página 3, a nova tentativa passou, 40 vagas em 1min05 (antes 4min40). Tester independente aprovou os critérios e achou a espera que não respeitava o cancelamento, já corrigida.
+- **Não commitado.** Resposta à issue #1 rascunhada, não postada.
+- **Próxima ação:** ▶️ commit e push com o ok do mantenedor, responder a issue #1. Depois, comando `descobrir` (acha o identificador da empresa nos ATS) e catálogo de empresas, que dependem de decisão do mantenedor.
+
+## Histórico de sessões
+
+<details>
+<summary>2026-10-06 e 2026-10-08 · setup e Linux</summary>
+
 - **Feito nesta sessão (2026-10-06):** primeiro uso simplificado depois de uma instalação no Linux. Comando `setup` (`npm run setup`), agendamento no Linux por timer do systemd de usuário, README reescrito em torno de um Começo rápido de três passos, referência movida para `docs/referencia.md`, skill de onboarding ajustada. Suíte: 306 testes passando, guarda de privacidade limpa.
 - **Validado:** `npm run setup` e a primeira coleta com a busca de exemplo, no Mac, em cópia limpa com pasta de dados temporária.
 - **Acrescentado em 2026-10-08:** seção do README para uso sem terminal, pelo app de desktop (aba Code do Claude e app do Codex). Publicado junto com o restante desta sessão.
@@ -28,7 +38,7 @@ A versão 0.1.0 está com o código de F1 a F5 entregue: coleta em seis fontes, 
 - **Dívidas:** as anteriores continuam. No Mac e no Linux, `schedule status` não informa a próxima execução.
 - **Próxima ação:** ▶️ o mantenedor refaz a instalação no Linux seguindo só o Começo rápido, roda `schedule on` e confere com `systemctl --user list-timers`. Depois, onboarding com o próprio perfil, Windows e o lançamento.
 
-## Histórico de sessões
+</details>
 
 <details>
 <summary>2026-10-02 (segunda parte) · 0.1.0</summary>

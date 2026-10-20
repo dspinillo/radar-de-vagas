@@ -58,7 +58,7 @@ O onboarding preenche este arquivo por você. Para editar na mão, salve como JS
 
 O arquivo nasce com termos e empresas fictícios. Enquanto as empresas inventadas estiverem lá, só a Gupy traz vaga real.
 
-**LinkedIn** vem desligado. Para ligar, mude `fontes.linkedin` para `true`. É raspagem de páginas públicas, sem login: pode sofrer bloqueios e mudanças no portal. O coletor espera entre chamadas e interrompe a fonte se encontrar uma barreira de acesso.
+**LinkedIn** vem desligado. Para ligar, mude `fontes.linkedin` para `true`. É raspagem de páginas públicas, sem login: pode sofrer bloqueios e mudanças no portal. O coletor espera um segundo entre chamadas e para de paginar quando o teto de detalhes enche. Se o LinkedIn responder 429 (limite de volume), espera e tenta de novo até três vezes; se a barreira persistir, ou se aparecer login ou captcha, interrompe só essa fonte e as outras seguem. Para reduzir o risco, use poucos termos e um `detalhesNovosPorFonte` menor.
 
 ## Coleta
 

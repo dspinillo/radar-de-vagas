@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { sources } from '../src/sources/index.mjs';
+import { RETRY_WAITS } from '../src/sources/linkedin.mjs';
 import { validateJob } from '../src/job.mjs';
 import { validateSearch, loadSearch, initializeDataDir } from '../src/data-dir.mjs';
 import { mkdtemp, rm } from 'node:fs/promises';
@@ -84,7 +85,7 @@ test('LinkedIn espera entre todas as chamadas, inclusive termos e detalhes', asy
   assert.deepEqual(h.waits, [1000, 1000, 1000]);
   assert.ok(h.calls.every(call => call.options.redirect === 'manual'));
 });
-for (const status of [302, 401, 403, 429, 999]) {
+for (const status of [302, 401, 403, 999]) {
   test(`LinkedIn interrompe todos os termos no primeiro HTTP ${status}`, async () => {
     const response = status === 999 ? { ok: false, status, text: async () => '' } : respond('', status);
     let calls = 0;
@@ -94,6 +95,47 @@ for (const status of [302, 401, 403, 429, 999]) {
     assert.match(result.errors[0].message, /bloqueio/);
   });
 }
+test('LinkedIn: 429 persistente espera, tenta de novo e só então interrompe todos os termos', async () => {
+  let calls = 0;
+  const waits = [];
+  const result = await sourceByName('linkedin').collect({ search: { ...search, termos: ['um', 'dois'] }, sleep: async ms => waits.push(ms),
+    fetch: async () => { calls++; return respond('', 429); } });
+  assert.equal(calls, 1 + RETRY_WAITS.length);
+  assert.deepEqual(waits, RETRY_WAITS);
+  assert.equal(result.errors.length, 1);
+  assert.match(result.errors[0].message, /bloqueio \(HTTP 429\) depois de 3 novas tentativas/);
+});
+test('LinkedIn: 429 passageiro na listagem e no detalhe não perde a vaga', async () => {
+  const h = harness('linkedin', [respond('', 429), linkedinList, respond('', 429), respond('', 429), linkedinDetail, '']);
+  const result = await sourceByName('linkedin').collect(h.ctx);
+  assert.deepEqual(result.errors, []);
+  assert.equal(result.jobs.length, 1);
+  assert.deepEqual(h.waits, [5000, 1000, 5000, 15000, 1000]);
+});
+test('LinkedIn: cancelar durante a espera do 429 encerra logo, sem exceção', async () => {
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), 50);
+  const started = Date.now();
+  const result = await sourceByName('linkedin').collect({ search, signal: controller.signal, fetch: async () => respond('', 429) });
+  assert.ok(Date.now() - started < 2000, `demorou ${Date.now() - started} ms`);
+  assert.equal(result.jobs.length, 0);
+});
+test('LinkedIn: Retry-After maior que a espera padrão é respeitado, com teto de 60 s', async () => {
+  const limited = seconds => new Response('', { status: 429, headers: { 'Retry-After': String(seconds) } });
+  const h = harness('linkedin', [limited(20), limited(600), linkedinList, linkedinDetail, '']);
+  const result = await sourceByName('linkedin').collect(h.ctx);
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(h.waits.slice(0, 2), [20000, 60000]);
+});
+test('LinkedIn: teto de detalhes cheio para de paginar o termo', async () => {
+  const two = linkedinList.replace('</li>', '</li>' + linkedinList.replaceAll('50101', '50102'));
+  const h = harness('linkedin', [two, linkedinDetail]);
+  h.ctx.search.detalhesNovosPorFonte = 1;
+  const result = await sourceByName('linkedin').collect(h.ctx);
+  assert.equal(result.jobs.length, 1);
+  assert.equal(h.calls.length, 2);
+  assert.match(result.errors[0].message, /1 vagas ficaram para a próxima rodada/);
+});
 test('LinkedIn bloqueado no detalhe para imediatamente e conserva vagas anteriores', async () => {
   const h = harness('linkedin', [linkedinList.replace('</li>', '</li>' + linkedinList.replaceAll('50101', '50102')), linkedinDetail, '<html><form action="/checkpoint/challenge">captcha</form></html>']);
   h.ctx.search.termos.push('outro');
@@ -252,7 +294,7 @@ for (const name of ['gupy', 'inhire']) {
   });
 }
 test('As fontes seguintes continuam após o bloqueio do LinkedIn', async () => {
-  const blocked = harness('linkedin', [respond('', 429)]);
+  const blocked = harness('linkedin', Array.from({ length: 1 + RETRY_WAITS.length }, () => respond('', 429)));
   const result = await sourceByName('linkedin').collect(blocked.ctx);
   assert.equal(result.errors.length, 1);
   for (const name of ['greenhouse', 'lever', 'ashby', 'inhire']) {
