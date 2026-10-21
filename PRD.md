@@ -8,7 +8,7 @@ Um radar pessoal de vagas que roda na máquina de quem procura emprego. Um agent
 
 ## 2. Princípios de produto (inegociáveis)
 
-1. **Ranquear e orientar, nunca decidir.** O radar dá estrelas, motivo e alertas. Não se candidata sozinho e não esconde vaga por conta própria.
+1. **Ranquear e orientar, nunca decidir.** O radar dá estrelas, motivo e alertas. Não se candidata sozinho: só envia uma candidatura por ordem expressa da pessoa para aquela vaga (decisão 0004). Não esconde vaga por conta própria.
 2. **Os dados ficam com a pessoa.** Perfil, currículo, régua e histórico vivem fora do repositório, na máquina dela. Nada é enviado a serviço nosso, porque não existe serviço nosso.
 3. **Descarte vira alerta, não corte.** O motivo de um descarte vira ponto de atenção nas vagas futuras. A decisão continua sendo da pessoa.
 4. **Ler a vaga inteira.** O julgamento nunca é feito sobre descrição truncada. Requisito de idioma e de tecnologia costuma estar no fim do anúncio.

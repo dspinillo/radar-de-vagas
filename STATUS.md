@@ -1,6 +1,6 @@
 # Radar de Vagas · Status
 
-> Atualize ao final de cada sessão. Última atualização: **2026-10-20** · frente ativa: lançamento da 0.1 · versão 0.1.0
+> Atualize ao final de cada sessão. Última atualização: **2026-10-21** · frente ativa: lançamento da 0.1 · versão 0.1.0
 > Legenda: ✅ feito · 🟡 parcial · ▶️ próximo · ⏸️ aguardando · 🔒 bloqueado · ⬜ não iniciado
 
 ## Estado atual (leia primeiro)
@@ -17,18 +17,34 @@ A versão 0.1.0 está com o código de F1 a F5 entregue: coleta em seis fontes, 
 | F5 · candidatura e entrevista | 🟡 |
 | F6 · lançamento 0.1 | 🟡 |
 | F7 · mais fontes | ⬜ |
-| F8 · folha de respostas e preenchimento assistido | ⬜ |
+| F8 · folha de respostas e preenchimento assistido | 🟡 |
 
 ## Onde paramos (última sessão)
 
-- **Feito nesta sessão (2026-10-20, noite):** comando `descobrir` (acha o identificador da empresa em Greenhouse, Lever, Ashby e InHire pelo nome, só pela listagem, e conta vagas no Brasil), com testes, referência e skill de onboarding ajustadas. Suíte: 326 testes passando, guarda limpa. Commit e push feitos com o ok do mantenedor.
-- **Validado:** descoberta real com pasta de dados temporária. Uma empresa grande apareceu no Ashby com contagem de vagas no Brasil em cerca de 1 s; outra, que não usa esses ATS, voltou vazia com a orientação de usar `--id`. Sem nome, o comando sai com código 2.
+- **Feito nesta sessão (2026-10-21):**
+  - aviso de assinatura no README e no onboarding (OpenCode com modelo gratuito como alternativa);
+  - F8 com duas skills: `candidatura` (folha de respostas) e `preencher-formulario` (experimental, Claude in Chrome);
+  - seção Dados de candidatura no onboarding; `paths` devolve `application` e `answerSheets`;
+  - decisão 0004, `examples/candidatura.md`.
+  - Suíte: 326 testes passando, guarda limpa.
+- **Validado:** folha de respostas gerada pelo Codex real com perfil e vaga fictícios. Os quatro alertas vieram com trecho, nada de fato inventado, estado intacto, sem travessão. Tester independente achou contagem de caracteres errada (785 declarado, 760 real), texto de "Sendo transparente" atribuindo posição não declarada e comentário dentro do bloco de colar. A skill foi corrigida (contagem por comando a partir do arquivo, rascunho a confirmar, blocos cercados), **sem nova rodada com agente**.
+- **Não validado:** `preencher-formulario` em formulário real; folha sem `candidatura.md`, com versão anterior e com vaga marcada.
+- **Decidido com o mantenedor:** o agente só envia candidatura por ordem expressa da pessoa para aquela vaga. `PRD.md` e decisão 0004 já dizem isso; commit e push feitos com o ok dele.
 - **Próxima ação:**
-  1. ▶️ Custo de tokens (a issue #1 virou isso: um usuário gastou quase US$ 25 em dois dias pela API). Deixar **explícito no README e no onboarding**: o projeto foi pensado para a assinatura do Claude Code ou do Codex; quem não tem nenhuma das duas pode usar o OpenCode com um modelo gratuito.
-  2. ▶️ Catálogo de empresas por ATS, montado de fontes neutras e validado pelo `descobrir` (decisão de 20/10).
+  1. ▶️ Mantenedor: ajustar a linha do princípio de produto no `CLAUDE.md` ("quem decide é sempre a pessoa; quem envia é ela, ou o agente por ordem expressa dela para aquela vaga"). O agente não pode editar esse arquivo.
+  2. ▶️ Validar `preencher-formulario` numa candidatura real, com a pessoa ao lado.
+  3. ▶️ Catálogo de empresas por ATS, montado de fontes neutras e validado pelo `descobrir` (decisão de 20/10).
 - **Ideias de outro projeto (adaptação BR de um buscador de vagas com IA):** filtro de integridade do texto da vaga antes do agente (texto escondido, caracteres invisíveis, linhas com cara de instrução) e sinais de golpe na triagem (Pix, dados bancários, contato só por WhatsApp). Só a ideia, escrita do zero. Ainda não decidido quando entra. Fontes Sólides e Remotar seguem na fila da F7.
 
 ## Histórico de sessões
+
+<details>
+<summary>2026-10-20, noite · comando descobrir</summary>
+
+- **Feito:** comando `descobrir` (acha o identificador da empresa em Greenhouse, Lever, Ashby e InHire pelo nome, só pela listagem, e conta vagas no Brasil). Suíte: 326 testes. Publicado em `ca78e34`.
+- **Validado:** descoberta real: uma empresa achada no Ashby com vagas no Brasil em cerca de 1 s; outra, fora desses ATS, vazia com orientação de usar `--id`.
+
+</details>
 
 <details>
 <summary>2026-10-20 · issue #1 (LinkedIn e 429)</summary>

@@ -42,10 +42,11 @@ export async function stateCommand(command, args, options) {
   if (command === 'paths') {
     const dataDir = await initializeDataDir(options);
     const resumes = join(dataDir, 'curriculos'), interviews = join(dataDir, 'entrevistas');
-    await mkdir(resumes, { recursive: true });
-    await mkdir(interviews, { recursive: true });
+    const answerSheets = join(dataDir, 'folhas');
+    for (const dir of [resumes, interviews, answerSheets]) await mkdir(dir, { recursive: true });
     json({ dataDir, profile: join(dataDir, 'perfil.md'), search: join(dataDir, 'busca.json'),
-      ruler: join(dataDir, 'regua.md'), resumes, interviews });
+      ruler: join(dataDir, 'regua.md'), resumes, interviews,
+      application: join(dataDir, 'candidatura.md'), answerSheets });
   } else if (command === 'pending') {
     const value = flags(args, ['--limit']);
     const explicit = value['--limit'] === undefined ? null : positive(value['--limit'], 'O limite');

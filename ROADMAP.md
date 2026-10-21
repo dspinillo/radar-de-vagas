@@ -25,7 +25,7 @@
 | F5 | Candidatura e entrevista | Depois do inscrevi, a vaga entra no acompanhamento, com status e próximo passo. Um pedido gera o currículo ajustado à vaga, e marcar entrevista gera a página única de munição. Nada nos dois documentos vem de fora do perfil. |
 | F6 | Lançamento 0.1 | Alguém de fora instala em menos de dez minutos seguindo só o README. Vídeo de demonstração publicado. |
 | F7 | Mais fontes | Novas fontes por empresa e por termo, com guia para contribuir com uma fonte. |
-| F8 | Folha de respostas e preenchimento assistido | A folha de respostas do formulário sai pronta para revisar e colar. O preenchimento no navegador só entra se resistir a marcação de formulário, captcha e regras das plataformas, e sempre para antes do enviar. |
+| F8 | Folha de respostas e preenchimento assistido | Skill `candidatura`: a folha de respostas sai pronta para revisar e colar, com alertas, personalização da Gupy, habilidades, respostas abertas e dados cadastrais, só com fatos do perfil e dos dados de candidatura, em qualquer agente. Skill `preencher-formulario`, experimental e opcional: preenche pelo Claude in Chrome com regras duras e receitas por portal, e para antes do enviar salvo ordem expressa da pessoa. |
 
 ## F2 a F6 · entregue em 2026-10-02 (versão 0.1.0)
 
@@ -38,6 +38,14 @@ O julgamento ficou em skills de markdown (`skills/`); o código são comandos fi
 | F4 | 🟡 | `schedule on`, `off` e `status`. Validado de verdade no Mac (launchd). Linux por timer do systemd de usuário, só com testes automáticos. | Validar no Windows (Agendador de Tarefas) e no Linux em máquina real. |
 | F5 | 🟡 | Skills de currículo por vaga, entrevista e acompanhamento; comando `track`; etapa e próximo passo na página. Os dois documentos foram gerados com agente real e nada saiu de fora do perfil. | Conferir a impressão em PDF; uso com perfil real. |
 | F6 | 🟡 | Versão 0.1.0, README com instalação do plugin e fluxo de uso. | Alguém de fora instalar em menos de dez minutos; vídeo de demonstração. |
+
+## F8 · tarefas
+
+| Tarefa | Objetivo | Critério de aceite | Depende de |
+|---|---|---|---|
+| T8.1 🟡 | Dados de candidatura no onboarding | O onboarding grava `candidatura.md` fora do repositório com pretensão por regime, último pacote, declarações padrão, idiomas por nível, diversidade opcional, contato, endereço e nomes dos pais. Nunca CPF, RG nem senha. | F2 |
+| T8.2 🟡 | Skill `candidatura` (folha de respostas) | Para uma vaga, a folha traz alertas primeiro, personalização de até 1.500 caracteres com contagem, 3 habilidades com origem, respostas abertas e qual currículo usar. Nada fora do perfil; lacuna vira pergunta. Validado com agente real e perfil fictício. | T8.1 |
+| T8.3 🟡 | Skill `preencher-formulario` (experimental) | Manual com regras duras (aba nova, sem documento nem senha, sem autoavaliação inventada, para antes do enviar) e receitas por portal. Validado num formulário real com a pessoa ao lado. | T8.2 |
 
 ## F1 · tarefas
 

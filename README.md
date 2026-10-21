@@ -4,7 +4,7 @@
 >
 > **Tipo:** misto (plugin de agente, scripts e página local) · **Nível:** N3 · **Stack:** Node 20+ sem dependências · **Licença:** MIT
 
-**Versão 0.1.0.** Coleta, radar local, cinco skills, triagem, acompanhamento e agendamento implementados. Para instalar, vá direto ao [Começo rápido](#começo-rápido).
+**Versão 0.1.0.** Coleta, radar local, sete skills, triagem, acompanhamento, folha de respostas e agendamento implementados. Para instalar, vá direto ao [Começo rápido](#começo-rápido).
 
 ## Visão
 
@@ -12,7 +12,7 @@ Procurar emprego virou trabalho de varredura: abrir cinco portais por dia, ler a
 
 Ele começa com uma entrevista: quem você é, seus casos e entregas, seu currículo, onde quer trabalhar, em que modelo, que idiomas fala e que faixa salarial aceita. A partir daí coleta vagas em vários portais, lê a descrição inteira de cada uma e devolve estrelas, o motivo e os alertas. Quando você descarta uma vaga e escreve o porquê, isso vira memória: a próxima vaga com o mesmo ponto chega avisada.
 
-O que ele **não** é: não se candidata por você, não esconde vaga por conta própria e não manda seus dados para lugar nenhum. Perfil, currículo e histórico ficam numa pasta da sua máquina, fora deste repositório.
+O que ele **não** é: não se candidata sem você mandar, não esconde vaga por conta própria e não manda seus dados para lugar nenhum. Perfil, currículo e histórico ficam numa pasta da sua máquina, fora deste repositório.
 
 ## Como funciona
 
@@ -21,7 +21,7 @@ O que ele **não** é: não se candidata por você, não esconde vaga por conta 
 3. A coleta roda quando você pedir ou no horário que você agendar (por exemplo, a cada seis horas).
 4. A página do radar abre no navegador com as vagas novas, as estrelas e os alertas.
 5. Você marca **inscrevi** ou **descartar**, com o motivo. O radar aprende.
-6. Para a vaga que vale a pena, o agente monta o currículo ajustado a ela. Quando aparecer entrevista, monta uma página única de preparo. Os dois usam só o que está no seu perfil.
+6. Para a vaga que vale a pena, o agente monta o currículo ajustado a ela e a folha de respostas do formulário, pronta para colar. Quando aparecer entrevista, monta uma página única de preparo. Tudo usa só o que está no seu perfil.
 
 Sem agente instalado, a coleta e a página funcionam só com Node. Você vê as vagas, mas sem estrelas nem alertas.
 
@@ -47,6 +47,8 @@ radar-de-vagas/
 ## Começo rápido
 
 Você precisa de **Node.js 20 ou superior** e **Git**. Funciona em Mac, Linux e Windows, e não há dependências para instalar. Para ter estrelas, alertas e entrevista de onboarding, tenha também o Claude Code ou o Codex instalado e com login feito.
+
+> **Use com assinatura, não pela API.** O Radar foi pensado para a assinatura do Claude Code ou do Codex. Com chave de API paga por uso, cada triagem e cada documento são cobrados, e o gasto pode passar de dezenas de dólares em poucos dias. Sem nenhuma das duas assinaturas, use o [OpenCode](https://opencode.ai) com um modelo gratuito: ele lê o `AGENTS.md` e segue as mesmas skills. A triagem agendada (`triage-run`) só chama o Claude Code ou o Codex; no OpenCode, peça a triagem na conversa.
 
 **1. Baixe e prepare.** No terminal (Terminal no Mac e no Linux, PowerShell no Windows):
 
@@ -126,7 +128,7 @@ Este repositório não contém dado pessoal de ninguém e não pode conter. Os e
 
 ## Skills
 
-O julgamento do produto vive em cinco arquivos de `skills/`, lidos pelo Claude Code e pelo Codex: onboarding, triagem com memória, currículo por vaga, entrevista e acompanhamento. Basta pedir em português, na pasta do clone:
+O julgamento do produto vive em sete arquivos de `skills/`, lidos pelo Claude Code e pelo Codex: onboarding, triagem com memória, currículo por vaga, folha de respostas, preenchimento assistido (experimental), entrevista e acompanhamento. Basta pedir em português, na pasta do clone:
 
 | Você pede | O agente faz |
 |---|---|
@@ -134,9 +136,13 @@ O julgamento do produto vive em cinco arquivos de `skills/`, lidos pelo Claude C
 | `Faça a triagem` | Estrelas, motivo e alertas nas vagas novas |
 | `Monte o currículo para a vaga <ID>` | Currículo ajustado à vaga, só com fatos do seu perfil |
 | `Vou ter entrevista na vaga <ID>` | Página única de preparo |
+| `Monte a folha de respostas da vaga <ID>` | Alertas, personalização da Gupy, habilidades, respostas abertas e dados cadastrais, prontos para colar |
+| `Preencha o formulário da vaga <ID>` | Experimental: preenche no navegador e para antes do enviar, salvo ordem sua |
 | `Tive novidade na vaga <ID>` | Atualiza etapa e próximo passo |
 
 O ID aparece na linha da vaga na página, com botão **Copiar ID**.
+
+**Preenchimento assistido é experimental.** Só funciona no Claude Code com a extensão Claude in Chrome, é a parte que mais gasta tokens e a mais frágil, porque os portais mudam o layout sem aviso. Ele nunca digita CPF, RG nem senha, não responde por você o que você não respondeu e para antes do botão de enviar, a menos que você mande enviar aquela vaga. A folha de respostas é o plano B que sempre funciona: você cola os textos no formulário.
 
 No Claude Code, quem preferir comandos com barra pode instalar o plugin (opcional):
 

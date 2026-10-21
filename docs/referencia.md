@@ -11,7 +11,7 @@ Rode na raiz do clone. `npm run setup`, `npm run collect` e `npm run open` são 
 | `node bin/radar.mjs setup` | Confere a máquina, cria a pasta de dados e diz o próximo passo |
 | `node bin/radar.mjs collect` | Coleta vagas das fontes ligadas na busca |
 | `node bin/radar.mjs open` | Abre a página do radar no navegador |
-| `node bin/radar.mjs paths` | Mostra os caminhos de perfil, busca, régua, currículos e entrevistas |
+| `node bin/radar.mjs paths` | Mostra os caminhos de perfil, busca, régua, currículos, entrevistas, dados de candidatura e folhas de respostas |
 | `node bin/radar.mjs triage-run` | Roda a triagem no agente configurado em `busca.json` |
 | `node bin/radar.mjs descobrir "Nome da Empresa" [--id identificador]...` | Acha o identificador da empresa em Greenhouse, Lever, Ashby e InHire e diz se há vaga no Brasil |
 | `node bin/radar.mjs schedule on --hours 6` | Liga o agendamento |
@@ -21,7 +21,7 @@ Rode na raiz do clone. `npm run setup`, `npm run collect` e `npm run open` são 
 
 ## Pasta de dados
 
-`busca.json`, `estado.json`, `perfil.md`, `regua.md`, currículos e entrevistas ficam em `.radar-de-vagas` na sua pasta pessoal, fora do clone. A variável opcional `RADAR_DATA_DIR` escolhe outra pasta absoluta, também fora do repositório.
+`busca.json`, `estado.json`, `perfil.md`, `regua.md`, `candidatura.md`, currículos, entrevistas e folhas de respostas ficam em `.radar-de-vagas` na sua pasta pessoal, fora do clone. A variável opcional `RADAR_DATA_DIR` escolhe outra pasta absoluta, também fora do repositório.
 
 Para experimentar sem tocar nos seus dados, aponte para uma pasta temporária antes dos comandos.
 

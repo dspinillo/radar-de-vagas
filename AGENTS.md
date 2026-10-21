@@ -14,6 +14,8 @@ somente nestas skills; não copie seu conteúdo para outra árvore de skills.
 | Montar currículo para uma vaga | [curriculo-por-vaga](skills/curriculo-por-vaga/SKILL.md) |
 | Registrar entrevista e preparar casos | [entrevista](skills/entrevista/SKILL.md) |
 | Registrar novidade de um processo | [acompanhamento](skills/acompanhamento/SKILL.md) |
+| Montar a folha de respostas de uma vaga | [candidatura](skills/candidatura/SKILL.md) |
+| Preencher o formulário no navegador (experimental, só Claude in Chrome) | [preencher-formulario](skills/preencher-formulario/SKILL.md) |
 
 Execute os comandos na raiz do clone. Dados de uso ficam nos caminhos de `paths`, fora
 do repositório. Um pedido para usar o radar não é um pedido para alterar seu código.

@@ -32,10 +32,12 @@ test('paths cria pastas, aponta todos os arquivos e preserva os existentes; CLI 
     env: { ...process.env, RADAR_DATA_DIR: options.dataDir },
   });
   const paths = JSON.parse(stdout);
-  assert.deepEqual(Object.keys(paths), ['dataDir', 'profile', 'search', 'ruler', 'resumes', 'interviews']);
+  assert.deepEqual(Object.keys(paths), ['dataDir', 'profile', 'search', 'ruler', 'resumes', 'interviews',
+    'application', 'answerSheets']);
   for (const [key, name] of Object.entries({ profile: 'perfil.md', search: 'busca.json', ruler: 'regua.md',
-    resumes: 'curriculos', interviews: 'entrevistas' })) assert.equal(paths[key], join(paths.dataDir, name));
-  for (const path of [paths.resumes, paths.interviews]) assert.ok((await stat(path)).isDirectory());
+    resumes: 'curriculos', interviews: 'entrevistas', application: 'candidatura.md', answerSheets: 'folhas' }))
+    assert.equal(paths[key], join(paths.dataDir, name));
+  for (const path of [paths.resumes, paths.interviews, paths.answerSheets]) assert.ok((await stat(path)).isDirectory());
   await writeFile(paths.profile, 'Perfil fictício.');
   assert.equal(await main(['paths'], options), 0);
   assert.equal(await readFile(paths.profile, 'utf8'), 'Perfil fictício.');
