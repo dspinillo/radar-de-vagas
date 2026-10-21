@@ -13,6 +13,7 @@ Rode na raiz do clone. `npm run setup`, `npm run collect` e `npm run open` são 
 | `node bin/radar.mjs open` | Abre a página do radar no navegador |
 | `node bin/radar.mjs paths` | Mostra os caminhos de perfil, busca, régua, currículos e entrevistas |
 | `node bin/radar.mjs triage-run` | Roda a triagem no agente configurado em `busca.json` |
+| `node bin/radar.mjs descobrir "Nome da Empresa" [--id identificador]...` | Acha o identificador da empresa em Greenhouse, Lever, Ashby e InHire e diz se há vaga no Brasil |
 | `node bin/radar.mjs schedule on --hours 6` | Liga o agendamento |
 | `node bin/radar.mjs schedule status` | Mostra se está ligado |
 | `node bin/radar.mjs schedule off` | Volta ao modo manual |
@@ -59,6 +60,10 @@ O onboarding preenche este arquivo por você. Para editar na mão, salve como JS
 O arquivo nasce com termos e empresas fictícios. Enquanto as empresas inventadas estiverem lá, só a Gupy traz vaga real.
 
 **LinkedIn** vem desligado. Para ligar, mude `fontes.linkedin` para `true`. É raspagem de páginas públicas, sem login: pode sofrer bloqueios e mudanças no portal. O coletor espera um segundo entre chamadas e para de paginar quando o teto de detalhes enche. Se o LinkedIn responder 429 (limite de volume), espera e tenta de novo até três vezes; se a barreira persistir, ou se aparecer login ou captcha, interrompe só essa fonte e as outras seguem. Para reduzir o risco, use poucos termos e um `detalhesNovosPorFonte` menor.
+
+## Descobrir identificador de empresa
+
+`descobrir "Nome da Empresa"` sonda Greenhouse, Lever, Ashby e InHire só pela listagem (nunca abre detalhe de vaga) e diz se cada identificador candidato existe, quantas vagas tem e quantas parecem ser no Brasil. Os candidatos vêm do nome (tudo junto, com hífen, primeira palavra) e de `--id identificador` (repetível), que você usa quando já sabe o identificador exato, visto no endereço da página de carreiras. O comando não edita `busca.json`; o resultado em JSON e o resumo em português dizem o que incluir em `empresas.<fonte>` à mão.
 
 ## Coleta
 

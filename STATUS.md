@@ -21,12 +21,22 @@ A versão 0.1.0 está com o código de F1 a F5 entregue: coleta em seis fontes, 
 
 ## Onde paramos (última sessão)
 
-- **Feito nesta sessão (2026-10-20):** correção da issue #1 (usuário só recebia vagas da Gupy). O LinkedIn tratava HTTP 429 como bloqueio e desistia da fonte; agora espera 5, 15 e 30 s (ou `Retry-After`, teto de 60 s) antes de parar. A listagem também para de paginar quando o teto de detalhes enche (antes ia até a página 100). A espera é interrompida se a coleta for cancelada. Suíte: 310 testes passando, guarda limpa.
-- **Validado:** coleta real no LinkedIn com pasta de dados temporária e teto de 40: o 429 apareceu na página 3, a nova tentativa passou, 40 vagas em 1min05 (antes 4min40). Tester independente aprovou os critérios e achou a espera que não respeitava o cancelamento, já corrigida.
-- **Não commitado.** Resposta à issue #1 rascunhada, não postada.
-- **Próxima ação:** ▶️ commit e push com o ok do mantenedor, responder a issue #1. Depois, comando `descobrir` (acha o identificador da empresa nos ATS) e catálogo de empresas, que dependem de decisão do mantenedor.
+- **Feito nesta sessão (2026-10-20, noite):** comando `descobrir` (acha o identificador da empresa em Greenhouse, Lever, Ashby e InHire pelo nome, só pela listagem, e conta vagas no Brasil), com testes, referência e skill de onboarding ajustadas. Suíte: 326 testes passando, guarda limpa. Commit e push feitos com o ok do mantenedor.
+- **Validado:** descoberta real com pasta de dados temporária. Uma empresa grande apareceu no Ashby com contagem de vagas no Brasil em cerca de 1 s; outra, que não usa esses ATS, voltou vazia com a orientação de usar `--id`. Sem nome, o comando sai com código 2.
+- **Próxima ação:**
+  1. ▶️ Custo de tokens (a issue #1 virou isso: um usuário gastou quase US$ 25 em dois dias pela API). Deixar **explícito no README e no onboarding**: o projeto foi pensado para a assinatura do Claude Code ou do Codex; quem não tem nenhuma das duas pode usar o OpenCode com um modelo gratuito.
+  2. ▶️ Catálogo de empresas por ATS, montado de fontes neutras e validado pelo `descobrir` (decisão de 20/10).
+- **Ideias de outro projeto (adaptação BR de um buscador de vagas com IA):** filtro de integridade do texto da vaga antes do agente (texto escondido, caracteres invisíveis, linhas com cara de instrução) e sinais de golpe na triagem (Pix, dados bancários, contato só por WhatsApp). Só a ideia, escrita do zero. Ainda não decidido quando entra. Fontes Sólides e Remotar seguem na fila da F7.
 
 ## Histórico de sessões
+
+<details>
+<summary>2026-10-20 · issue #1 (LinkedIn e 429)</summary>
+
+- **Feito:** o LinkedIn tratava HTTP 429 como bloqueio e desistia da fonte; agora espera 5, 15 e 30 s (ou `Retry-After`, teto de 60 s) antes de parar. A listagem para de paginar quando o teto de detalhes enche. A espera é interrompida se a coleta for cancelada. Suíte: 310 testes passando. Publicado em `8eecddd`; issue respondida.
+- **Validado:** coleta real no LinkedIn com teto de 40: o 429 apareceu na página 3, a nova tentativa passou, 40 vagas em 1min05 (antes 4min40).
+
+</details>
 
 <details>
 <summary>2026-10-06 e 2026-10-08 · setup e Linux</summary>

@@ -6,7 +6,7 @@ import { startServer } from '../src/page/server.mjs';
 import { openBrowser } from '../src/open-browser.mjs';
 import { stateCommand, stateCommands } from '../src/commands.mjs';
 
-const help = 'Uso: node bin/radar.mjs <comando>\n\nsetup    Confere a máquina, cria a pasta de dados e diz o próximo passo.\ncollect  Coleta vagas da busca.\nopen     Abre o radar no navegador.\npaths    Mostra os caminhos dos dados.\npending [--limit N]  Lista vagas para triagem.\nshow <id>  Mostra a vaga inteira.\ntriage <id> --fit <1 a 5> --reason "texto" [--alert "texto"]...\ndiscards  Lista os descartes.\ntrack <id> --stage "texto" [--next "texto" | --clear-next] [--notes "texto" | --clear-notes]\ntriage-run  Executa a skill de triagem no agente configurado.\nschedule on [--hours 6] | off | status\n--help   Mostra esta ajuda.';
+const help = 'Uso: node bin/radar.mjs <comando>\n\nsetup    Confere a máquina, cria a pasta de dados e diz o próximo passo.\ncollect  Coleta vagas da busca.\nopen     Abre o radar no navegador.\npaths    Mostra os caminhos dos dados.\npending [--limit N]  Lista vagas para triagem.\nshow <id>  Mostra a vaga inteira.\ntriage <id> --fit <1 a 5> --reason "texto" [--alert "texto"]...\ndiscards  Lista os descartes.\ntrack <id> --stage "texto" [--next "texto" | --clear-next] [--notes "texto" | --clear-notes]\ntriage-run  Executa a skill de triagem no agente configurado.\nschedule on [--hours 6] | off | status\ndescobrir "Nome da Empresa" [--id identificador]...  Acha o identificador da empresa em Greenhouse, Lever, Ashby e InHire e diz se há vaga no Brasil.\n--help   Mostra esta ajuda.';
 
 async function openCommand({ startServer: serve, openBrowser: open, signals, stdout, stderr }) {
   const server = await serve();

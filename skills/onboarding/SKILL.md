@@ -23,7 +23,9 @@ description: Entrevista em português para iniciar ou atualizar o Radar de Vagas
    Não converta CLT em PJ nem suponha equivalência de benefícios ou remuneração.
 6. Pergunte termos de busca e senioridade pretendida; depois empresas a acompanhar por ATS.
    Use identificadores fornecidos das páginas de Greenhouse, Lever, Ashby e InHire.
-   Se só houver o nome da empresa, peça o endereço público ou identificador; não adivinhe o slug.
+   Se só houver o nome da empresa, rode `node bin/radar.mjs descobrir "Nome"` e proponha os
+   identificadores achados com vaga no Brasil; não adivinhe o slug. Sempre confirme com a
+   pessoa antes de incluir um identificador em `empresas`.
    Sem empresas para um ATS, use lista vazia; retire os identificadores fictícios da busca inicial.
 7. Pergunte se quer ligar a coleta do LinkedIn. Explique: é raspagem de endereço público,
    sem login, pode sofrer bloqueio e parar de funcionar. Mantenha desligado sem escolha afirmativa.

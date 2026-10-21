@@ -5,9 +5,12 @@ import { loadState, setTriage, setTracking } from './state.mjs';
 import { runTriage } from './triage-run.mjs';
 import { schedule } from './schedule.mjs';
 import { setup } from './setup.mjs';
+import { discover } from './discover.mjs';
+import { companyToken } from './source-utils.mjs';
 
-export const stateCommands = ['setup', 'paths', 'pending', 'show', 'triage', 'discards', 'track', 'triage-run', 'schedule'];
+export const stateCommands = ['setup', 'paths', 'pending', 'show', 'triage', 'discards', 'track', 'triage-run', 'schedule', 'descobrir'];
 const usage = message => { throw Object.assign(new Error(message), { exitCode: 2 }); };
+const REPEATABLE_FLAGS = ['--alert', '--id'];
 
 function flags(args, allowed, switches = []) {
   const values = {};
@@ -17,8 +20,8 @@ function flags(args, allowed, switches = []) {
     if (switches.includes(key) && separator >= 0) usage('Esta opção não recebe valor.');
     const value = switches.includes(key) ? true : separator < 0 ? args[++i] : args[i].slice(separator + 1);
     if (![...allowed, ...switches].includes(key) || value === undefined ||
-        (key !== '--alert' && Object.hasOwn(values, key))) usage('Opções inválidas ou sem valor.');
-    if (key === '--alert') (values[key] ??= []).push(value);
+        (!REPEATABLE_FLAGS.includes(key) && Object.hasOwn(values, key))) usage('Opções inválidas ou sem valor.');
+    if (REPEATABLE_FLAGS.includes(key)) (values[key] ??= []).push(value);
     else values[key] = value;
   }
   return values;
@@ -61,6 +64,16 @@ export async function stateCommand(command, args, options) {
         cutReason: mark.cutReason, markedAt: mark.markedAt })));
   } else if (command === 'triage-run') {
     return runTriage(options);
+  } else if (command === 'descobrir') {
+    const [name, ...rest] = args;
+    if (!name || !name.trim() || name.startsWith('--')) usage('Informe o nome da empresa.');
+    const value = flags(rest, ['--id']);
+    const ids = value['--id'] ?? [];
+    for (const id of ids) {
+      try { companyToken(id); }
+      catch { usage('Identificador de empresa inválido em --id; use o identificador da página de carreiras.'); }
+    }
+    return discover(name, ids, options);
   } else if (command === 'schedule') {
     const [action, ...rest] = args;
     if (!['on', 'off', 'status'].includes(action)) usage('Use schedule on, off ou status.');

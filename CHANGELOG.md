@@ -7,6 +7,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 ### Adicionado
 
 - **Comando `setup`.** `npm run setup` (ou `node bin/radar.mjs setup`) confere Node 20+, cria a pasta de dados com a busca de exemplo, procura Claude Code e Codex no PATH, informa se o agendamento existe no sistema e imprime o próximo passo conforme o que encontrou (onboarding no agente, caminho manual sem agente, ou coletar quando perfil e busca já existem). Pode ser repetido; não altera arquivo existente. Substitui a linha de `node --input-type=module -e` do README.
+- **Comando `descobrir`.** `node bin/radar.mjs descobrir "Nome da Empresa" [--id identificador]...` gera identificadores candidatos a partir do nome e sonda Greenhouse, Lever, Ashby e InHire só pela listagem, dizendo quantas vagas cada um tem e quantas parecem ser no Brasil. Não edita `busca.json`; a skill de onboarding usa o comando e confirma com a pessoa antes de incluir. Validado em consulta real: uma empresa achada no Ashby em cerca de 1 s e uma empresa fora desses ATS com resultado vazio e orientação para usar `--id`.
 - **Agendamento no Linux.** `schedule on/off/status` usa timer do systemd de usuário (`radar-de-vagas.timer` e `.service` na pasta de configuração do usuário), com primeira rodada um minuto depois de ligar e repetição pelo intervalo escolhido. Sem systemd de usuário (WSL, contêiner) o comando explica que só o modo manual está disponível e não deixa unidades para trás. Coberto por testes com `systemctl` injetado; **não validado em máquina Linux real**.
 
 ### Corrigido
