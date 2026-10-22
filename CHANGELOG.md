@@ -4,6 +4,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## [Não lançado]
 
+## [0.2.0] - 2026-10-21
+
 ### Adicionado
 
 - **Comando `setup`.** `npm run setup` (ou `node bin/radar.mjs setup`) confere Node 20+, cria a pasta de dados com a busca de exemplo, procura Claude Code e Codex no PATH, informa se o agendamento existe no sistema e imprime o próximo passo conforme o que encontrou (onboarding no agente, caminho manual sem agente, ou coletar quando perfil e busca já existem). Pode ser repetido; não altera arquivo existente. Substitui a linha de `node --input-type=module -e` do README.

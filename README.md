@@ -4,7 +4,7 @@
 >
 > **Tipo:** misto (plugin de agente, scripts e página local) · **Nível:** N3 · **Stack:** Node 20+ sem dependências · **Licença:** MIT
 
-**Versão 0.1.0.** Coleta, radar local, sete skills, triagem, acompanhamento, folha de respostas e agendamento implementados. Para instalar, vá direto ao [Começo rápido](#começo-rápido).
+**Versão 0.2.0.** Coleta, radar local, sete skills, triagem, acompanhamento, folha de respostas e agendamento implementados. Para instalar, vá direto ao [Começo rápido](#começo-rápido).
 
 ## Visão
 

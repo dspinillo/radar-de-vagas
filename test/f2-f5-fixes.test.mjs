@@ -286,7 +286,7 @@ test('ID continua visível após inscrevi; copiar usa o ID literal e informa fal
   assert.match(select('#feedback').textContent, /copie manualmente/);
 });
 
-test('documentação copiada para pasta temporária usa marketplace ./ e fecha versão 0.1.0', async t => {
+test('documentação copiada para pasta temporária usa marketplace ./ e fecha versão 0.2.0', async t => {
   const { root } = await setup(t);
   for (const file of ['README.md', 'package.json', 'CHANGELOG.md', 'ARCHITECTURE.md', 'CONTEXT.md']) {
     await cp(new URL(`../${file}`, import.meta.url), join(root, file));
@@ -294,8 +294,11 @@ test('documentação copiada para pasta temporária usa marketplace ./ e fecha v
   const readme = await readFile(join(root, 'README.md'), 'utf8');
   assert.match(readme, /^claude plugin marketplace add \.\/$/m);
   assert.doesNotMatch(readme, /^claude plugin marketplace add \.$/m);
-  assert.equal(JSON.parse(await readFile(join(root, 'package.json'), 'utf8')).version, '0.1.0');
+  assert.equal(JSON.parse(await readFile(join(root, 'package.json'), 'utf8')).version, '0.2.0');
+  const plugin = JSON.parse(await readFile(new URL('../.claude-plugin/plugin.json', import.meta.url), 'utf8'));
+  assert.equal(plugin.version, '0.2.0');
+  assert.match(readme, /\*\*Versão 0\.2\.0\.\*\*/);
   const changelog = await readFile(join(root, 'CHANGELOG.md'), 'utf8');
-  assert.match(changelog, /## \[Não lançado\][\s\S]*?## \[0\.1\.0\] - 2026-10-02/);
+  assert.match(changelog, /## \[Não lançado\][\s\S]*?## \[0\.2\.0\] - 2026-10-21[\s\S]*?## \[0\.1\.0\] - 2026-10-02/);
   assert.ok(!(await readFile(join(root, 'CONTEXT.md'), 'utf8')).includes('`web/`'));
 });

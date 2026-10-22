@@ -1,11 +1,11 @@
 # Radar de Vagas · Status
 
-> Atualize ao final de cada sessão. Última atualização: **2026-10-21** · frente ativa: lançamento da 0.1 · versão 0.1.0
+> Atualize ao final de cada sessão. Última atualização: **2026-10-21** · frente ativa: lançamento · versão 0.2.0
 > Legenda: ✅ feito · 🟡 parcial · ▶️ próximo · ⏸️ aguardando · 🔒 bloqueado · ⬜ não iniciado
 
 ## Estado atual (leia primeiro)
 
-A versão 0.1.0 está com o código de F1 a F5 entregue: coleta em seis fontes, página local, comandos para o agente, cinco skills (onboarding, triagem com memória de descarte, currículo por vaga, entrevista e acompanhamento) e agendamento. O que falta não é código: uso com pessoa e perfil reais, validação no Windows e o lançamento em si.
+A versão 0.2.0 (2026-10-21) está com o código de F1 a F5 e a F8 entregues: coleta em seis fontes, comando `descobrir`, página local, comandos para o agente, sete skills (onboarding, triagem com memória de descarte, currículo por vaga, folha de respostas, preenchimento assistido experimental, entrevista e acompanhamento) e agendamento. O que falta não é código: uso com pessoa e perfil reais, validação no Windows e o lançamento em si.
 
 | Bloco | Estado |
 |---|---|
@@ -30,6 +30,7 @@ A versão 0.1.0 está com o código de F1 a F5 entregue: coleta em seis fontes, 
 - **Validado:** folha de respostas gerada pelo Codex real com perfil e vaga fictícios. Os quatro alertas vieram com trecho, nada de fato inventado, estado intacto, sem travessão. Tester independente achou contagem de caracteres errada (785 declarado, 760 real), texto de "Sendo transparente" atribuindo posição não declarada e comentário dentro do bloco de colar. A skill foi corrigida (contagem por comando a partir do arquivo, rascunho a confirmar, blocos cercados), **sem nova rodada com agente**.
 - **Não validado:** `preencher-formulario` em formulário real; folha sem `candidatura.md`, com versão anterior e com vaga marcada.
 - **Decidido com o mantenedor:** o agente só envia candidatura por ordem expressa da pessoa para aquela vaga. `PRD.md` e decisão 0004 já dizem isso; commit e push feitos com o ok dele.
+- **Versão 0.2.0** fechada com tag `v0.2.0` a pedido do mantenedor.
 - **Próxima ação:**
   1. ▶️ Mantenedor: ajustar a linha do princípio de produto no `CLAUDE.md` ("quem decide é sempre a pessoa; quem envia é ela, ou o agente por ordem expressa dela para aquela vaga"). O agente não pode editar esse arquivo.
   2. ▶️ Validar `preencher-formulario` numa candidatura real, com a pessoa ao lado.
